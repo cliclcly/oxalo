@@ -14,7 +14,8 @@
 enum ECOMP
 {
 	ECOMP_DEFAULT,
-	ECOMP_RENDER
+	ECOMP_RENDER,
+	ECOMP_PHYSIC
 };
 
 // ------------------------------------
@@ -28,6 +29,8 @@ public:
 	static Component* GetNewComponent(ECOMP c);
 
 	virtual void HandleMsg(Message* ) = 0;
+	
+	virtual void SetAttribute(Attribute* ar);
 	
 	ECOMP type;
 	std::vector<EATTR> reqs;
@@ -43,6 +46,19 @@ public:
 	virtual void HandleMsg(Message* );
 	
 	SpatialAttr* m_spatial;
+};
+
+// ------------------------------------
+class PhysicComponent : public Component
+// ------------------------------------
+{
+public:
+	PhysicComponent();
+	
+	virtual void HandleMsg(Message* );
+	
+	SpatialAttr* m_spatial;
+	PhysicAttr* m_physic;
 };
 
 #endif

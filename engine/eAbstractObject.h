@@ -21,14 +21,15 @@ public:
 	AbstractObject();
 	
 	virtual int RespondsTo(EMSG m) = 0;
-	virtual void HandleMsg(Message* m) = 0;
+	virtual void HandleMsg(Message* m);
 	
 	virtual int HasComponent(ECOMP c);
 	virtual int AddComponent(ECOMP c);
+	//virtual int AddComponent(Component* c);
 	
 	virtual int HasAttribute(EATTR a);
-	virtual void AddAttribute(EATTR a);
-	virtual void AddAttribute(Attribute* );
+	virtual Attribute* AddAttribute(EATTR a);
+	virtual int AddAttribute(Attribute* );
 	virtual Attribute* GetAttribute(EATTR a);
 	
 	int GUID;
@@ -47,10 +48,6 @@ public:
 	Square(float x, float y);
 	
 	virtual int RespondsTo(EMSG m);
-	virtual void HandleMsg(Message* m);
-	
-	void Think(Message* m);
-	void Render(Message* m);
 	
 	virtual Camera* GetCamera();
 	
@@ -67,10 +64,6 @@ public:
 	PSquare(float x, float y);
 	
 	virtual int RespondsTo(EMSG m);
-	virtual void HandleMsg(Message* m);
-	
-	void Think(Message* m);
-	// void Render();
 };
 
 #endif
