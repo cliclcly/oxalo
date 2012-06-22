@@ -12,7 +12,7 @@ CXXFLAGS = -Ic:\\devIL\\include
 
 cube : engine $(OBJECTS)
 	cd engine && $(MAKE)
-	g++ -enable-auto-import -Wall -o oxalo.exe $(OBJECTS) $(ENGINE) -lm $(OPENGL)
+	g++ -Wl,--enable-auto-import -Wall -o oxalo.exe $(OBJECTS) $(ENGINE) -lm $(OPENGL)
 	
 engine :
 	cd engine && $(MAKE)
