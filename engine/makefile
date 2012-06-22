@@ -10,7 +10,7 @@ CXX = g++
 CXXFLAGS = -Ic:\\devIL\\include
 
 engine : $(OBJECTS)
-	g++ -enable-auto-import -shared -o ../libengine.dll $(OBJECTS)  $(OPENGL) $(DEVIL)
+	g++ -Wl,--enable-auto-import -shared -o ../libengine.dll $(OBJECTS)  $(OPENGL) $(DEVIL)
 	
 $(OBJECTS) : %.o: %.cpp %.h
 	$(CXX) -c $(CXXFLAGS) $< -o $@
