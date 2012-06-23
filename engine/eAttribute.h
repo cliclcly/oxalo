@@ -11,8 +11,15 @@ enum EATTR
 {
 	EATTR_DEFAULT,
 	EATTR_SPATIAL,
-	EATTR_PHYSIC
+	EATTR_PHYSIC,
+	EATTR_GEOM
 };
+
+enum GEOM
+{
+	GEOM_SQUARE,
+	GEOM_TRIANGLE
+};	
 
 // ------------------------------------
 class Attribute
@@ -56,6 +63,19 @@ public:
 	float m_ddx;
 	float m_dy;
 	float m_ddy;
+};
+
+// ------------------------------------
+class GeomAttr : public Attribute
+// ------------------------------------
+{
+public:
+	GeomAttr();
+	GeomAttr(GEOM);
+	
+	virtual int IsAttribute(EATTR a);
+	
+	GEOM m_shape;
 };
 
 #endif

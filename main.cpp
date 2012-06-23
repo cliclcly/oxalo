@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 	int result = EngineClass::Initialize(600, 480);
 	
 	Square* s1 = new Square(10, 10);
-	Square* s2 = new Square(8, 8);
+	Triangle* s2 = new Triangle(8, 8);
 	Square* s3 = new Square(12, 8);
 	PSquare* s4 = new PSquare(10, 12);
 	EngineClass::AddObject(s1);

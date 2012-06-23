@@ -56,6 +56,22 @@ private:
 };
 
 // ------------------------------------
+class Triangle : public AbstractObject, public Camerable
+// ------------------------------------
+{
+public:
+	Triangle();
+	Triangle(float x, float y);
+	
+	virtual int RespondsTo(EMSG m);
+	
+	virtual Camera* GetCamera();
+	
+private:
+	Camera* m_camera;
+};
+
+// ------------------------------------
 class PSquare : public Square
 // ------------------------------------
 {
