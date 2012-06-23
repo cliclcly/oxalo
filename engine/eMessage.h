@@ -51,8 +51,9 @@ public:
 class CollisionMessage : public Message
 {
 public:
-	CollisionMessage(CollisionInfo* );
+	CollisionMessage( float, CollisionInfo* );
 	
+	float diff;
 	CollisionInfo* info;
 };
 

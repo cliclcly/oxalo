@@ -87,12 +87,16 @@ class CollisionComponent : public Component
 {
 public:
 	CollisionComponent();
+	~CollisionComponent();
 	
 	virtual void HandleMsg(Message* );
 	
 	CollisionInfo* GetCollisionInfo();
 	
 	SpatialAttr* m_spatial;
+	GeomAttr* m_geom;
+	
+	CollisionInfo* m_info;
 };
 
 #endif

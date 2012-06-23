@@ -7,6 +7,8 @@
 #ifndef __EATTRIBUTE_H__
 #define __EATTRIBUTE_H__
 
+class Box;
+
 enum EATTR 
 {
 	EATTR_DEFAULT,
@@ -76,6 +78,7 @@ public:
 	virtual int IsAttribute(EATTR a);
 	
 	GEOM m_shape;
+	Box* m_bound;
 };
 
 #endif
