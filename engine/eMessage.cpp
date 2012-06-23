@@ -14,23 +14,43 @@ Message::Message()
 }
 
 // ------------------------------------
-RenderMessage::RenderMessage()
+Message::Message(EMSG m) :
 // ------------------------------------
+	type(m)
 {
-	type = EMSG_RENDER;
+
 }
 
 // ------------------------------------
-ThinkMessage::ThinkMessage(float diff)
+RenderMessage::RenderMessage() :
 // ------------------------------------
+	Message(EMSG_RENDER)
 {
-	type = EMSG_THINK;
-	m_diff = diff;
+
 }
 
 // ------------------------------------
-CamerableMessage::CamerableMessage()
+ThinkMessage::ThinkMessage(float diff) : 
 // ------------------------------------
+	Message(EMSG_THINK),
+	m_diff(diff)
 {
-	type = EMSG_CAMERABLE;
+
+}
+
+// ------------------------------------
+CamerableMessage::CamerableMessage() :
+// ------------------------------------
+	Message(EMSG_CAMERABLE)
+{
+
+}
+
+// ------------------------------------
+CollisionMessage::CollisionMessage(CollisionInfo* c) :
+// ------------------------------------
+	Message(EMSG_COLLISION),
+	info(c)
+{
+
 }

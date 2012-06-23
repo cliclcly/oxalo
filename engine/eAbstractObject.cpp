@@ -61,7 +61,24 @@ int AbstractObject::AddComponent(ECOMP c)
 		comp->SetAttribute(ar);
 	}
 	
+	// set parent
+	comp->parent = this;
+	
 	m_comps.push_back(comp);	
+}
+
+// ------------------------------------
+Component* AbstractObject::GetComponent(ECOMP c)
+// -----------------------------------
+{
+	std::vector<Component* >::iterator it;
+	for (it = m_comps.begin(); it != m_comps.end(); it++)
+	{
+		if ((*it)->type == ECOMP_COLLISION)
+			return (*it);
+	}
+	
+	return NULL;
 }
 
 // ------------------------------------
@@ -124,6 +141,7 @@ Square::Square() :
 	AddAttribute(new SpatialAttr(0, 0));
 	
 	AddComponent(ECOMP_RENDER);
+	AddComponent(ECOMP_COLLISION);
 }
 
 // ------------------------------------
@@ -134,6 +152,7 @@ Square::Square(float x, float y) :
 	AddAttribute(new SpatialAttr(x, y));
 	
 	AddComponent(ECOMP_RENDER);
+	AddComponent(ECOMP_COLLISION);
 }
 
 // ------------------------------------

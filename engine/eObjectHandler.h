@@ -11,10 +11,13 @@
 #include <GL/gl.h>
 
 //#include "eEngineClass.h"
-#include "eMessage.h"
-#include "eAbstractObject.h"
+//#include "eMessage.h"
+//#include "eAbstractObject.h"
 #include "eAbstractKeyboardHandler.h"
 #include <vector>
+
+class Message;
+class AbstractObject;
 
 class ObjectHandler
 {
@@ -24,6 +27,8 @@ public:
 	virtual int RemoveObject(int GUID) = 0;
 	virtual void SendMessage(Message* m) = 0;
 	virtual AbstractObject* GetObjectFromGUID(int GUID) = 0;
+	
+	virtual void FindCollisions() = 0;
 };
 
 class DumbObjectHandler : public ObjectHandler, public AbstractKeyboardHandler
@@ -37,6 +42,8 @@ public:
 	virtual int RemoveObject(int GUID);
 	virtual void SendMessage(Message* m);
 	virtual AbstractObject* GetObjectFromGUID(int GUID);
+	
+	virtual void FindCollisions();
 	
 	// KeyboardHandler
 	virtual void KeyDown(GLubyte key, int x, int y);
