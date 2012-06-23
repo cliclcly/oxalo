@@ -78,6 +78,44 @@ AbstractObject* DumbObjectHandler::GetObjectFromGUID(int GUID)
 }
 
 // ------------------------------------
+void DumbObjectHandler::FindCollisions()
+// ------------------------------------
+{
+	std::vector<AbstractObject* >::iterator inner;
+	std::vector<AbstractObject* >::iterator outer;
+	
+	for (outer = m_objects.begin(); outer != m_objects.end(); outer++)
+	{
+		AbstractObject* o1 = *outer;
+		if (!o1->RespondsTo(EMSG_COLLISION))
+			continue;
+		
+		CollisionComponent* cc = 
+			static_cast<CollisionComponent* >(o1->GetComponent(ECOMP_COLLISION));
+		if (!cc) continue;
+		
+		CollisionInfo* info1 = cc->GetCollisionInfo();
+		
+		// Send CollisionMessage to all objects
+		for (inner = m_objects.begin(); inner != m_objects.end(); inner++)
+		{
+			AbstractObject* o2 = *inner;
+			if (!o2->RespondsTo(EMSG_COLLISION));
+				continue;
+				
+			CollisionComponent* cc2 = 
+				static_cast<CollisionComponent* >(o2->GetComponent(ECOMP_COLLISION));
+			if (!cc2) continue;
+			
+			CollisionInfo* info2 = cc2->GetCollisionInfo();
+				
+			o2->HandleMsg(new CollisionMessage(info1));
+			o1->HandleMsg(new CollisionMessage(info2));
+		}
+	}
+}
+
+// ------------------------------------
 void DumbObjectHandler::KeyDown(GLubyte key, int x, int y)
 // ------------------------------------
 {

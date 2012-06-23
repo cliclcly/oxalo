@@ -10,12 +10,17 @@
 #include <vector>
 #include "eMessage.h"
 #include "eAttribute.h"
+#include "ePolygon.h"
+
+class AbstractObject;
+class Box;
 
 enum ECOMP
 {
 	ECOMP_DEFAULT,
 	ECOMP_RENDER,
-	ECOMP_PHYSIC
+	ECOMP_PHYSIC,
+	ECOMP_COLLISION
 };
 
 // ------------------------------------
@@ -34,6 +39,7 @@ public:
 	
 	ECOMP type;
 	std::vector<EATTR> reqs;
+	AbstractObject* parent;
 };
 
 // ------------------------------------
@@ -59,6 +65,33 @@ public:
 	
 	SpatialAttr* m_spatial;
 	PhysicAttr* m_physic;
+};
+
+// ------------------------------------
+class CollisionInfo
+// ------------------------------------
+{
+public:
+	CollisionInfo();
+	
+	AbstractObject* other;
+	Vector2 pos;
+	Vector2 vel;
+	Box* bound;
+};
+
+// ------------------------------------
+class CollisionComponent : public Component
+// ------------------------------------
+{
+public:
+	CollisionComponent();
+	
+	virtual void HandleMsg(Message* );
+	
+	CollisionInfo* GetCollisionInfo();
+	
+	SpatialAttr* m_spatial;
 };
 
 #endif

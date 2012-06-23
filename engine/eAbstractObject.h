@@ -26,6 +26,7 @@ public:
 	virtual int HasComponent(ECOMP c);
 	virtual int AddComponent(ECOMP c);
 	//virtual int AddComponent(Component* c);
+	virtual Component* GetComponent(ECOMP c);
 	
 	virtual int HasAttribute(EATTR a);
 	virtual Attribute* AddAttribute(EATTR a);
