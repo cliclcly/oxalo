@@ -5,6 +5,7 @@
 // ****************************************************************************
 
 #include "eMessage.h"
+#include "eComponent.h"
 
 // ------------------------------------
 Message::Message()
@@ -47,9 +48,10 @@ CamerableMessage::CamerableMessage() :
 }
 
 // ------------------------------------
-CollisionMessage::CollisionMessage(CollisionInfo* c) :
+CollisionMessage::CollisionMessage( float d, CollisionInfo* c) :
 // ------------------------------------
 	Message(EMSG_COLLISION),
+	diff(d),
 	info(c)
 {
 

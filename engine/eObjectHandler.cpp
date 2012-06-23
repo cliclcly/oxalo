@@ -78,7 +78,7 @@ AbstractObject* DumbObjectHandler::GetObjectFromGUID(int GUID)
 }
 
 // ------------------------------------
-void DumbObjectHandler::FindCollisions()
+void DumbObjectHandler::FindCollisions(float diff)
 // ------------------------------------
 {
 	std::vector<AbstractObject* >::iterator inner;
@@ -100,7 +100,7 @@ void DumbObjectHandler::FindCollisions()
 		for (inner = m_objects.begin(); inner != m_objects.end(); inner++)
 		{
 			AbstractObject* o2 = *inner;
-			if (!o2->RespondsTo(EMSG_COLLISION));
+			if (!o2->RespondsTo(EMSG_COLLISION))
 				continue;
 				
 			CollisionComponent* cc2 = 
@@ -109,8 +109,12 @@ void DumbObjectHandler::FindCollisions()
 			
 			CollisionInfo* info2 = cc2->GetCollisionInfo();
 				
-			o2->HandleMsg(new CollisionMessage(info1));
-			o1->HandleMsg(new CollisionMessage(info2));
+			CollisionMessage* cm1 = new CollisionMessage(diff, info1);
+			CollisionMessage* cm2 = new CollisionMessage(diff, info2);
+			o2->HandleMsg(cm1);
+			o1->HandleMsg(cm2);
+			delete cm1;
+			delete cm2;
 		}
 	}
 }

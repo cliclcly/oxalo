@@ -11,6 +11,8 @@
 #include <windows.h>
 #include <GL/glut.h>
 
+#include <stdio.h>
+
 // ------------------------------------
 Component::Component() :
 // ------------------------------------
@@ -64,6 +66,8 @@ void Component::SetAttribute(Attribute* ar)
 		CollisionComponent* cc = static_cast<CollisionComponent* >(this);
 		if (ar->type == EATTR_SPATIAL)
 			cc->m_spatial = static_cast<SpatialAttr* >(ar);
+		if (ar->type == EATTR_GEOM)
+			cc->m_geom = static_cast<GeomAttr* >(ar);
 	}
 }
 
@@ -150,18 +154,55 @@ CollisionInfo::CollisionInfo() :
 // ------------------------------------
 CollisionComponent::CollisionComponent() :
 // ------------------------------------
-	Component(ECOMP_COLLISION)
+	Component(ECOMP_COLLISION),
+	m_info(0)
 {
 	reqs.push_back(EATTR_SPATIAL);
+	reqs.push_back(EATTR_GEOM);
 }
+
+/*
+// ------------------------------------
+CollisionComponent::~CollisionComponent()
+// ------------------------------------
+{
+	if (m_info)
+		//delete m_info;
+	m_info = 0;
+}
+*/
 
 // ------------------------------------
 void CollisionComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
-	if (m->type == EMSG_COLLISION)
+	switch(m->type)
 	{
+	case EMSG_COLLISION:
 		CollisionMessage* cm = static_cast<CollisionMessage* >(m);
+		CollisionInfo* info = cm->info;
+		
+		if (parent->GUID == info->other->GUID)
+			break;
+		
+		Box* mybox = m_geom->m_bound;
+		Box* itsbox = info->bound;
+		
+		Box* mytr = mybox->Translate(m_spatial->m_x, m_spatial->m_y);
+		Box* itstr = itsbox->Translate(info->pos.x, info->pos.y);
+		
+		if (mytr->IsColliding(itstr))
+		{
+			SpatialAttr* its = 
+				static_cast<SpatialAttr* >(info->other->GetAttribute(EATTR_SPATIAL));
+			its->m_x -= info->vel.x * cm->diff;
+			its->m_y -= info->vel.y * cm->diff;
+		}
+		
+		delete mytr;
+		delete itstr;
+		
+		break;
 	}
 }
 
@@ -169,24 +210,47 @@ void CollisionComponent::HandleMsg(Message* m)
 CollisionInfo* CollisionComponent::GetCollisionInfo()
 // ------------------------------------
 {
-	CollisionInfo* info = new CollisionInfo();
-	info->other = parent;
-	
-	if (parent->RespondsTo(EMSG_PHYSIC))
+	if (m_info)
 	{
-		PhysicAttr* pa = 
-			static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
-		info->vel = Vector2(pa->m_dx, pa->m_dy);
+		// update pos, vel
+		if (parent->RespondsTo(EMSG_PHYSIC))
+		{
+			PhysicAttr* pa = 
+				static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
+			m_info->vel = Vector2(pa->m_dx, pa->m_dy);
+			SpatialAttr* sa = 
+				static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));
+			m_info->pos = Vector2(sa->m_x, sa->m_y);
+		}
+		return m_info;
 	}
 	else
 	{
-		info->vel = Vector2(0, 0);
+	
+		CollisionInfo* info = new CollisionInfo();
+		info->other = parent;
+		
+		if (parent->RespondsTo(EMSG_PHYSIC))
+		{
+			PhysicAttr* pa = 
+				static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
+			info->vel = Vector2(pa->m_dx, pa->m_dy);
+		}
+		else
+		{
+			info->vel = Vector2(0, 0);
+		}
+		
+		SpatialAttr* sa = 
+			static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));
+		info->pos = Vector2(sa->m_x, sa->m_y);
+		
+		GeomAttr* ga =
+			static_cast<GeomAttr* >(parent->GetAttribute(EATTR_GEOM));
+		info->bound = ga->m_bound;
+		
+		m_info = info;
+		return info;
 	}
-	
-	SpatialAttr* sa = 
-		static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));
-	info->pos = Vector2(sa->m_x, sa->m_y);
-	
-	return info;
 }
 

@@ -28,7 +28,7 @@ public:
 	virtual void SendMessage(Message* m) = 0;
 	virtual AbstractObject* GetObjectFromGUID(int GUID) = 0;
 	
-	virtual void FindCollisions() = 0;
+	virtual void FindCollisions(float diff) = 0;
 };
 
 class DumbObjectHandler : public ObjectHandler, public AbstractKeyboardHandler
@@ -43,7 +43,7 @@ public:
 	virtual void SendMessage(Message* m);
 	virtual AbstractObject* GetObjectFromGUID(int GUID);
 	
-	virtual void FindCollisions();
+	virtual void FindCollisions(float diff);
 	
 	// KeyboardHandler
 	virtual void KeyDown(GLubyte key, int x, int y);

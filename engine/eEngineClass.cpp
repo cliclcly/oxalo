@@ -195,7 +195,12 @@ void EngineClass::glDisplay()
 	m_currentTime = newTime;
 	
 	// Think
-	m_objectHandler->SendMessage(new ThinkMessage(diff));
+	ThinkMessage* tm = new ThinkMessage(diff);
+	m_objectHandler->SendMessage(tm);
+	delete tm;
+	
+	// Collisions
+	m_objectHandler->FindCollisions(diff);
 	
 	// Graphics
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -208,7 +213,9 @@ void EngineClass::glDisplay()
 	m_zoom = m_camera->GetZoom();
 	glReshape(m_windowW, m_windowH);
 	
-	m_objectHandler->SendMessage(new RenderMessage());
+	RenderMessage* rm = new RenderMessage();
+	m_objectHandler->SendMessage(rm);
+	delete rm;
 	
 	glFlush();
 	

@@ -163,8 +163,10 @@ int Square::RespondsTo(EMSG m)
 {
 	if (m == EMSG_RENDER || 
 		m == EMSG_THINK ||
-		m == EMSG_CAMERABLE)
+		m == EMSG_CAMERABLE ||
+		m == EMSG_COLLISION)
 		return true;
+	return false;
 }
 
 // ------------------------------------
@@ -211,6 +213,7 @@ int Triangle::RespondsTo(EMSG m)
 		m == EMSG_THINK ||
 		m == EMSG_CAMERABLE)
 		return true;
+	return false;
 }
 
 // ------------------------------------
@@ -252,6 +255,8 @@ int PSquare::RespondsTo(EMSG m)
 	if (m == EMSG_THINK ||
 		m == EMSG_RENDER ||
 		m == EMSG_CAMERABLE ||
-		m == EMSG_PHYSIC)
+		m == EMSG_PHYSIC ||
+		m == EMSG_COLLISION)
 		return true;
+	return false;
 }

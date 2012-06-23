@@ -36,8 +36,9 @@ public:
 	Box();
 	Box( Vector2 , Vector2);
 	
-	int IsColliding(const Box& other);
+	int IsColliding(Box* other);
 	Vector2 NormalHitBy(const Vector2& pos, const Vector2& dir);
+	Box* Translate( float, float);
 };
 
 #endif

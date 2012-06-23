@@ -107,24 +107,24 @@ Box::Box(Vector2 b, Vector2 d)
 }
 
 // ------------------------------------
-int Box::IsColliding(const Box& other)
+int Box::IsColliding(Box* other)
 // ------------------------------------
 {
 	int cx = 0;
 	int cy = 0;
 
 	// check x collision
-	if (base.x <= other.base.x && (base.x + dim.x) >= other.base.x)
+	if (base.x <= other->base.x && (base.x + dim.x) >= other->base.x)
 		cx = 1;
-	if (base.x <= (other.base.x + other.dim.x) &&
-		(base.x + dim.x) >= (other.base.x + other.dim.x))
+	if (base.x <= (other->base.x + other->dim.x) &&
+		(base.x + dim.x) >= (other->base.x + other->dim.x))
 		cx = 1;
 		
 	// check y collision
-	if (base.y <= other.base.y && (base.y + dim.y) >= other.base.y)
+	if (base.y <= other->base.y && (base.y + dim.y) >= other->base.y)
 		cy = 1;
-	if (base.y <= (other.base.y + other.dim.y) &&
-		(base.y + dim.y) >= (other.base.y + other.dim.y))
+	if (base.y <= (other->base.y + other->dim.y) &&
+		(base.y + dim.y) >= (other->base.y + other->dim.y))
 		cy = 1;
 		
 	// colliding in both directions?
@@ -199,4 +199,11 @@ Vector2 Box::NormalHitBy(const Vector2& pos, const Vector2& dir)
 	}
 		
 	return Vector2(0, 0);
+}
+
+// ------------------------------------
+Box* Box::Translate( float x, float y)
+// ------------------------------------
+{
+	return new Box(Vector2(base.x + x, base.y + y), dim);
 }

@@ -5,6 +5,7 @@
 // ****************************************************************************
 
 #include "eAttribute.h"
+#include "ePolygon.h"
 
 // ------------------------------------
 Attribute::Attribute() :
@@ -84,7 +85,8 @@ int PhysicAttr::IsAttribute(EATTR a)
 GeomAttr::GeomAttr() :
 // ------------------------------------
 	Attribute(EATTR_GEOM),
-	m_shape(GEOM_SQUARE)
+	m_shape(GEOM_SQUARE),
+	m_bound(new Box(Vector2(-0.5, -0.5), Vector2(1, 1)))
 {
 
 }
@@ -95,7 +97,15 @@ GeomAttr::GeomAttr(GEOM g) :
 	Attribute(EATTR_GEOM),
 	m_shape(g)
 {
-
+	switch(g)
+	{
+	case GEOM_SQUARE:
+		m_bound = new Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+		break;
+	case GEOM_TRIANGLE:
+		m_bound = new Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+		break;
+	}
 }
 
 // ------------------------------------
