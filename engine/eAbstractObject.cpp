@@ -139,6 +139,7 @@ Square::Square() :
 	m_camera(0)
 {
 	AddAttribute(new SpatialAttr(0, 0));
+	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_COLLISION);
@@ -150,6 +151,7 @@ Square::Square(float x, float y) :
 	m_camera(0)
 {
 	AddAttribute(new SpatialAttr(x, y));
+	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_COLLISION);
@@ -167,6 +169,52 @@ int Square::RespondsTo(EMSG m)
 
 // ------------------------------------
 Camera* Square::GetCamera()
+// ------------------------------------
+{
+	SpatialAttr* sa = 	
+		static_cast<SpatialAttr* >(GetAttribute(EATTR_SPATIAL));
+
+	if (!m_camera)
+	{
+		m_camera = new Camera(&(sa->m_x), &(sa->m_y), new float(4.0));
+	}
+	return m_camera;
+}
+
+// ------------------------------------
+Triangle::Triangle() :
+// ------------------------------------
+	m_camera(0)
+{
+	AddAttribute(new SpatialAttr(0, 0));
+	AddAttribute(new GeomAttr(GEOM_TRIANGLE));
+	
+	AddComponent(ECOMP_RENDER);
+}
+
+// ------------------------------------
+Triangle::Triangle(float x, float y) :
+// ------------------------------------
+	m_camera(0)
+{
+	AddAttribute(new SpatialAttr(x, y));
+	AddAttribute(new GeomAttr(GEOM_TRIANGLE));
+	
+	AddComponent(ECOMP_RENDER);
+}
+
+// ------------------------------------
+int Triangle::RespondsTo(EMSG m)
+// ------------------------------------
+{
+	if (m == EMSG_RENDER || 
+		m == EMSG_THINK ||
+		m == EMSG_CAMERABLE)
+		return true;
+}
+
+// ------------------------------------
+Camera* Triangle::GetCamera()
 // ------------------------------------
 {
 	SpatialAttr* sa = 	
