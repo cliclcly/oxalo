@@ -164,6 +164,12 @@ int EngineClass::initialize(int width, int height)
 	// Timing
 	QueryPerformanceFrequency(&m_frequency);
 	QueryPerformanceCounter(&m_currentTime);
+
+	// initialize devIL
+	ilInit();
+	iluInit();
+	ilutInit();
+	ilutRenderer(ILUT_OPENGL);
 	
 	return 0;
 }

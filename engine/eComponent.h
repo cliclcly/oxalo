@@ -52,6 +52,7 @@ public:
 	virtual void HandleMsg(Message* );
 	
 	SpatialAttr* m_spatial;
+	GeomAttr* m_geom;
 };
 
 // ------------------------------------

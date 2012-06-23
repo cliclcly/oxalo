@@ -79,3 +79,29 @@ int PhysicAttr::IsAttribute(EATTR a)
 	if (a == EATTR_PHYSIC) return true;
 	return false;
 }
+
+// ------------------------------------
+GeomAttr::GeomAttr() :
+// ------------------------------------
+	Attribute(EATTR_GEOM),
+	m_shape(GEOM_SQUARE)
+{
+
+}
+
+// ------------------------------------
+GeomAttr::GeomAttr(GEOM g) :
+// ------------------------------------
+	Attribute(EATTR_GEOM),
+	m_shape(g)
+{
+
+}
+
+// ------------------------------------
+int GeomAttr::IsAttribute(EATTR a)
+// ------------------------------------
+{
+	if (a == EATTR_GEOM) return true;
+	return false;
+}

@@ -48,6 +48,8 @@ void Component::SetAttribute(Attribute* ar)
 		RenderComponent* rc = static_cast<RenderComponent* >(this);
 		if (ar->type == EATTR_SPATIAL)
 			rc->m_spatial = static_cast<SpatialAttr* >(ar);
+		if (ar->type == EATTR_GEOM)
+			rc->m_geom = static_cast<GeomAttr* >(ar);
 	}
 	if (type == ECOMP_PHYSIC)
 	{
@@ -71,6 +73,7 @@ RenderComponent::RenderComponent() :
 	Component(ECOMP_RENDER)
 {
 	reqs.push_back(EATTR_SPATIAL);
+	reqs.push_back(EATTR_GEOM);
 }
 
 // ------------------------------------
@@ -79,18 +82,36 @@ void RenderComponent::HandleMsg(Message* m)
 {
 	if (m->type == EMSG_RENDER)
 	{
-		glPushMatrix();
-		glTranslatef(m_spatial->m_x, m_spatial->m_y, 0);
-		glColor4f(1.0, 0.0, 0.0, 1.0);
-		
-		glBegin(GL_QUADS);
-			glVertex2f(-0.5, -0.5);
-			glVertex2f(-0.5, 0.5);
-			glVertex2f(0.5, 0.5);
-			glVertex2f(0.5, -0.5);
-		glEnd();
-		
-		glPopMatrix();
+		switch(m_geom->m_shape)
+		{
+			case GEOM_SQUARE:
+				glPushMatrix();	
+				glTranslatef(m_spatial->m_x, m_spatial->m_y, 0);
+				glColor4f(1.0, 0.0, 0.0, 1.0);
+				
+				glBegin(GL_QUADS);
+					glVertex2f(-0.5, -0.5);
+					glVertex2f(-0.5, 0.5);
+					glVertex2f(0.5, 0.5);
+					glVertex2f(0.5, -0.5);
+				glEnd();
+				
+				glPopMatrix();
+				break;
+			case GEOM_TRIANGLE:
+				glPushMatrix();	
+				glTranslatef(m_spatial->m_x, m_spatial->m_y, 0);
+				glColor4f(1.0, 0.0, 0.0, 1.0);
+				
+				glBegin(GL_TRIANGLES);
+					glVertex2f(0,.5);
+					glVertex2f(.5,-.5);
+					glVertex2f(-.5,-.5);
+				glEnd();
+				
+				glPopMatrix();
+				break;
+		}
 	}
 }
 
