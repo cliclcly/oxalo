@@ -152,6 +152,7 @@ int EngineClass::initialize(int width, int height)
 	
 	glutKeyboardFunc(EngineClass::GLKeyDown);
 	glutKeyboardUpFunc(EngineClass::GLKeyUp);
+	glutIgnoreKeyRepeat(true);
 	m_keyboardStack = new KeyboardStack();
 	m_keyboardStack->PushKeyboardHandler(new DumbKeyboardHandler());
 	
@@ -191,11 +192,17 @@ void EngineClass::glDisplay()
 	
 	GLfloat diff = newTime.QuadPart - m_currentTime.QuadPart;
 	diff /= m_frequency.QuadPart;
+	m_cumTime += diff;
+	if (m_cumTime > 1)
+	{
+		m_cumTime -= 1;
+		m_tock = 1;
+	}
 	
 	m_currentTime = newTime;
 	
 	// Think
-	ThinkMessage* tm = new ThinkMessage(diff);
+	ThinkMessage* tm = new ThinkMessage(diff, m_tock);
 	m_objectHandler->SendMessage(tm);
 	delete tm;
 	
@@ -216,6 +223,8 @@ void EngineClass::glDisplay()
 	RenderMessage* rm = new RenderMessage();
 	m_objectHandler->SendMessage(rm);
 	delete rm;
+	
+	m_tock = false;
 	
 	glFlush();
 	
@@ -257,7 +266,8 @@ void EngineClass::glKeyDown(GLubyte key, int x, int y)
 void EngineClass::glKeyUp(GLubyte key, int x, int y)
 // ------------------------------------
 {
-
+	if (m_keyboardStack)
+		m_keyboardStack->KeyUp(key, x, y);
 }
 
 // ------------------------------------

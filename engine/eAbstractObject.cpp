@@ -178,7 +178,7 @@ Camera* Square::GetCamera()
 
 	if (!m_camera)
 	{
-		m_camera = new Camera(&(sa->m_x), &(sa->m_y), new float(4.0));
+		m_camera = new Camera(&(sa->pos.x), &(sa->pos.y), new float(4.0));
 	}
 	return m_camera;
 }
@@ -225,7 +225,7 @@ Camera* Triangle::GetCamera()
 
 	if (!m_camera)
 	{
-		m_camera = new Camera(&(sa->m_x), &(sa->m_y), new float(4.0));
+		m_camera = new Camera(&(sa->pos.x), &(sa->pos.y), new float(4.0));
 	}
 	return m_camera;
 }

@@ -90,7 +90,7 @@ void RenderComponent::HandleMsg(Message* m)
 		{
 			case GEOM_SQUARE:
 				glPushMatrix();	
-				glTranslatef(m_spatial->m_x, m_spatial->m_y, 0);
+				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
 				glColor4f(1.0, 0.0, 0.0, 1.0);
 				
 				glBegin(GL_QUADS);
@@ -104,7 +104,7 @@ void RenderComponent::HandleMsg(Message* m)
 				break;
 			case GEOM_TRIANGLE:
 				glPushMatrix();	
-				glTranslatef(m_spatial->m_x, m_spatial->m_y, 0);
+				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
 				glColor4f(1.0, 0.0, 0.0, 1.0);
 				
 				glBegin(GL_TRIANGLES);
@@ -135,8 +135,8 @@ void PhysicComponent::HandleMsg(Message* m)
 	if (m->type == EMSG_THINK)
 	{
 		ThinkMessage* tm = static_cast<ThinkMessage* >(m);
-		m_physic->m_dy += -1 * tm->m_diff;
-		m_spatial->m_y += m_physic->m_dy * tm->m_diff;
+		m_physic->vel = m_physic->vel + Vector2(0, -10 * tm->m_diff);
+		m_spatial->pos += m_physic->vel.scale(tm->m_diff);
 	}
 }
 
@@ -161,17 +161,6 @@ CollisionComponent::CollisionComponent() :
 	reqs.push_back(EATTR_GEOM);
 }
 
-/*
-// ------------------------------------
-CollisionComponent::~CollisionComponent()
-// ------------------------------------
-{
-	if (m_info)
-		//delete m_info;
-	m_info = 0;
-}
-*/
-
 // ------------------------------------
 void CollisionComponent::HandleMsg(Message* m)
 // ------------------------------------
@@ -188,15 +177,60 @@ void CollisionComponent::HandleMsg(Message* m)
 		Box* mybox = m_geom->m_bound;
 		Box* itsbox = info->bound;
 		
-		Box* mytr = mybox->Translate(m_spatial->m_x, m_spatial->m_y);
+		Box* mytr = mybox->Translate(m_spatial->pos.x, m_spatial->pos.y);
 		Box* itstr = itsbox->Translate(info->pos.x, info->pos.y);
 		
 		if (mytr->IsColliding(itstr))
 		{
-			SpatialAttr* its = 
+			// find corner that is colliding
+			Vector2 point;
+			if (itstr->Contains(mytr->base))
+				point = mytr->base;
+			else if (itstr->Contains(mytr->base + Vector2(mytr->dim.x, 0)))
+				point = mytr->base + Vector2(mytr->dim.x, 0);
+			else if (itstr->Contains(mytr->base + Vector2(0, mytr->dim.y)))
+				point = mytr->base + Vector2(0, mytr->dim.y);
+			else if (itstr->Contains(mytr->base + mytr->dim))
+				point = mytr->base + mytr->dim;
+		
+			SpatialAttr* itsSA = 
 				static_cast<SpatialAttr* >(info->other->GetAttribute(EATTR_SPATIAL));
-			its->m_x -= info->vel.x * cm->diff;
-			its->m_y -= info->vel.y * cm->diff;
+			SpatialAttr* mySA = 
+				static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));
+			
+			//itsSA->pos.x -= info->vel.x * cm->diff;
+			//itsSA->pos.y -= info->vel.y * cm->diff;
+			
+			
+			if (parent->RespondsTo(EMSG_PHYSIC))
+			{
+				PhysicAttr* pa = 
+					static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
+					
+				Vector2 vel = pa->vel;
+				Vector2 impact = itstr->IntersectionPoint(Ray2(point, -vel));
+				Vector2 pene = point - impact;
+				if (pene.length() > 0.01)
+				{
+					Vector2 n = itstr->NormalHitBy(point, -vel);
+					Vector2 pn = pene.project(n);
+					Vector2 newpos = pene - pn.scale(2);
+					mySA->pos += newpos;
+					
+					pn = vel.project(n);
+					Vector2 newvel = vel - pn.scale(2);
+					pa->vel = newvel.scale(.5);
+					
+					printf("Point: "); point.print();
+					printf("\nVel: "); vel.print(); 
+					printf("\nNegVel: "); (-vel).print();
+					printf("\nImpact: "); impact.print();
+					printf("\nPene: "); pene.print();
+					printf("\nNewpos: "); newpos.print();
+					printf("\n\n");
+				}
+				
+			}
 		}
 		
 		delete mytr;
@@ -217,10 +251,10 @@ CollisionInfo* CollisionComponent::GetCollisionInfo()
 		{
 			PhysicAttr* pa = 
 				static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
-			m_info->vel = Vector2(pa->m_dx, pa->m_dy);
+			m_info->vel = pa->vel;
 			SpatialAttr* sa = 
 				static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));
-			m_info->pos = Vector2(sa->m_x, sa->m_y);
+			m_info->pos = sa->pos;
 		}
 		return m_info;
 	}
@@ -234,7 +268,7 @@ CollisionInfo* CollisionComponent::GetCollisionInfo()
 		{
 			PhysicAttr* pa = 
 				static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
-			info->vel = Vector2(pa->m_dx, pa->m_dy);
+			info->vel = pa->vel;
 		}
 		else
 		{
@@ -243,7 +277,7 @@ CollisionInfo* CollisionComponent::GetCollisionInfo()
 		
 		SpatialAttr* sa = 
 			static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));
-		info->pos = Vector2(sa->m_x, sa->m_y);
+		info->pos = sa->pos;
 		
 		GeomAttr* ga =
 			static_cast<GeomAttr* >(parent->GetAttribute(EATTR_GEOM));

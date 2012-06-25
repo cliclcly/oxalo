@@ -37,8 +37,7 @@ Attribute* Attribute::GetNewAttribute(EATTR a)
 SpatialAttr::SpatialAttr() :
 // ------------------------------------
 	Attribute(EATTR_SPATIAL),
-	m_x(0),
-	m_y(0)
+	pos(Vector2(0, 0))
 {
 
 }
@@ -47,8 +46,7 @@ SpatialAttr::SpatialAttr() :
 SpatialAttr::SpatialAttr(float x, float y) :
 // ------------------------------------
 	Attribute(EATTR_SPATIAL),
-	m_x(x),
-	m_y(y)
+	pos(Vector2(x, y))
 {
 
 }
@@ -65,10 +63,8 @@ int SpatialAttr::IsAttribute(EATTR a)
 PhysicAttr::PhysicAttr() :
 // ------------------------------------
 	Attribute(EATTR_PHYSIC),
-	m_dx(0),
-	m_ddx(0),
-	m_dy(0),
-	m_ddy(0)
+	vel(Vector2(0, 0)),
+	accel(Vector2(0, 0))
 {
 
 }

@@ -7,6 +7,8 @@
 #ifndef __EATTRIBUTE_H__
 #define __EATTRIBUTE_H__
 
+#include "ePolygon.h"
+
 class Box;
 
 enum EATTR 
@@ -48,8 +50,7 @@ public:
 
 	virtual int IsAttribute(EATTR a);
 	
-	float m_x;
-	float m_y;
+	Vector2 pos;
 };
 
 // ------------------------------------
@@ -61,10 +62,8 @@ public:
 	
 	virtual int IsAttribute(EATTR a);
 	
-	float m_dx;
-	float m_ddx;
-	float m_dy;
-	float m_ddy;
+	Vector2 vel;
+	Vector2 accel;
 };
 
 // ------------------------------------

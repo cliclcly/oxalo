@@ -87,7 +87,7 @@ class CollisionComponent : public Component
 {
 public:
 	CollisionComponent();
-	~CollisionComponent();
+	//~CollisionComponent();
 	
 	virtual void HandleMsg(Message* );
 	
