@@ -134,6 +134,19 @@ void DumbObjectHandler::KeyDown(GLubyte key, int x, int y)
 			m_current = o;
 		}
 	}
+	
+	KeyboardMessage* km = new KeyboardMessage(key, x, y, 1);
+	
+	std::vector<AbstractObject* >::iterator it;
+	for (it = m_objects.begin(); it != m_objects.end(); it++)
+	{
+		if ((*it)->RespondsTo(EMSG_KEYBOARD))
+		{
+			(*it)->HandleMsg(km);
+		}
+	}
+	
+	delete km;
 }
 
 // ------------------------------------
@@ -141,6 +154,19 @@ void DumbObjectHandler::KeyUp(GLubyte key, int x, int y)
 // ------------------------------------
 {
 	m_keys[key] = 0;
+	
+	KeyboardMessage* km = new KeyboardMessage(key, x, y, 0);
+	
+	std::vector<AbstractObject* >::iterator it;
+	for (it = m_objects.begin(); it != m_objects.end(); it++)
+	{
+		if ((*it)->RespondsTo(EMSG_KEYBOARD))
+		{
+			(*it)->HandleMsg(km);
+		}
+	}
+	
+	delete km;
 }
 
 // ------------------------------------

@@ -20,6 +20,7 @@
 #include "eAbstractKeyboardHandler.h"
 #include "eCamera.h"
 #include "eDebug.h"
+#include "ePlayer.h"
 
 
 class EngineClass
@@ -82,6 +83,8 @@ private: // Members
 	
 	LARGE_INTEGER m_frequency;
 	LARGE_INTEGER m_currentTime;
+	float m_cumTime;
+	int m_tock;
 	int m_lastGUID;
 };
 

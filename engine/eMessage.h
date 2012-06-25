@@ -7,6 +7,8 @@
 #ifndef __EMESSAGE_H__
 #define __EMESSAGE_H__
 
+#include <GL/gl.h>
+
 class CollisionInfo;
 
 enum EMSG
@@ -16,7 +18,8 @@ enum EMSG
 	EMSG_THINK,
 	EMSG_CAMERABLE,
 	EMSG_PHYSIC,
-	EMSG_COLLISION
+	EMSG_COLLISION,
+	EMSG_KEYBOARD
 };
 
 class Message
@@ -37,9 +40,10 @@ public:
 class ThinkMessage : public Message
 {
 public:
-	ThinkMessage(float );
+	ThinkMessage( float, int);
 
 	float m_diff;
+	int tock;
 };
 
 class CamerableMessage : public Message
@@ -55,6 +59,17 @@ public:
 	
 	float diff;
 	CollisionInfo* info;
+};
+
+class KeyboardMessage : public Message
+{
+public:
+	KeyboardMessage( GLubyte key, int x, int y, int down);
+	
+	GLubyte key;
+	int x;
+	int y;
+	int down;
 };
 
 #endif
