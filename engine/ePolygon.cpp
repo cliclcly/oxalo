@@ -59,6 +59,7 @@ Vector2 Vector2::normalize() const
 // ------------------------------------
 {
 	float l = length();
+	if (l == 0) Vector2(x, y);
 	return Vector2(x/l, y/l);
 }
 
@@ -276,17 +277,17 @@ int Box::IsColliding(Box* other)
 	int cy = 0;
 
 	// check x collision
-	if (base.x <= other->base.x && (base.x + dim.x) >= other->base.x)
+	if ((base.x <= other->base.x) && ((base.x + dim.x) >= other->base.x))
 		cx = 1;
-	if (base.x <= (other->base.x + other->dim.x) &&
-		(base.x + dim.x) >= (other->base.x + other->dim.x))
+	if ((base.x <= (other->base.x + other->dim.x)) &&
+		((base.x + dim.x) >= (other->base.x + other->dim.x)))
 		cx = 1;
 		
 	// check y collision
-	if (base.y <= other->base.y && (base.y + dim.y) >= other->base.y)
+	if ((base.y <= other->base.y) && ((base.y + dim.y) >= other->base.y))
 		cy = 1;
-	if (base.y <= (other->base.y + other->dim.y) &&
-		(base.y + dim.y) >= (other->base.y + other->dim.y))
+	if ((base.y <= (other->base.y + other->dim.y)) &&
+		((base.y + dim.y) >= (other->base.y + other->dim.y)))
 		cy = 1;
 		
 	// colliding in both directions?
@@ -322,23 +323,49 @@ Vector2 Box::NormalHitBy(const Vector2& pos, const Vector2& dir)
 	}
 	else
 	{
-		int sign = (pos.y - base.y) - (pos.x - base.x);
-		int isign = (pos.y - base.y) + (pos.x - base.x);
 		if (itop)
 		{
 			if (ileft)
 			{
-				if (isign >= 0) return Vector2(0, 1);
-				else return Vector2(-1, 0);
+				if (pos.x <= base.x) return Vector2(-1, 0);
+				if (pos.x <= (base.x + dim.x))
+				{
+					if (pos.y <= (base.y + dim.y))
+					{
+						if (dir.x >= 0) return Vector2(0, 1);
+						else return Vector2(-1, 0);
+					}
+					else return Vector2(0, 1);
+				}
+				return Vector2(0, 1);
 			}
 			if (iright)
 			{
-				if (sign >= 0) return Vector2(0, 1);
-				else return Vector2(1, 0);
+				if (pos.x <= base.x) return Vector2(0, 1);
+				if (pos.x <= (base.x + dim.x))
+				{
+					if (pos.y <= (base.y + dim.y))
+					{
+						if (dir.x <= 0) return Vector2(0, 1);
+						else return Vector2(1, 0);
+					}
+					return Vector2(0, 1);
+				}
+				return Vector2(1, 0);
 			}
 			if (ibot)
 			{
-				if (pos.y >= base.y) return Vector2(0, 1);
+				if (pos.y >= base.y) 
+				{
+					if (pos.y <= (base.y + dim.y))
+					{
+						if (dir.y >= 0)
+							return Vector2(0, 1);
+						else
+							return Vector2(0, -1);
+					}
+					return Vector2(0, 1);
+				}
 				else return Vector2(0, -1);
 			}
 		}
@@ -346,18 +373,48 @@ Vector2 Box::NormalHitBy(const Vector2& pos, const Vector2& dir)
 		{
 			if (ileft)
 			{
-				if (sign >= 0) return Vector2(-1, 0);
-				else return Vector2(0, -1);
+				if (pos.x <= base.x) return Vector2(-1, 0);
+				if (pos.x <= (base.x + dim.x))
+				{
+					if (pos.y >= base.y)
+					{
+						if (dir.x <= 0) return Vector2(-1, 0);
+						else return Vector2(0, -1);
+					}
+					return Vector2(0, -1);
+				}
+				return Vector2(0, -1);
 			}
 			if (iright)
 			{
-				if (isign >= 0) return Vector2(1, 0);
-				else return Vector2(0, -1);
+				if (pos.x <= base.x) return Vector2(0, -1);
+				if (pos.x <= (base.x + dim.x))
+				{
+					if (pos.y >= base.y)
+					{
+						if (dir.x >= 0) return Vector2(1, 0);
+						else return Vector2(0, -1);
+					}
+					return Vector2(0, -1);
+				}
+				return Vector2(1, 0);
 			}
 		}
 		if (pos.x <= base.x) return Vector2(-1, 0);
-		else return Vector2(1, 0);
+		else 
+		{
+			if (pos.x < (base.x + dim.x))
+			{
+				if (dir.x <= 0)
+					return Vector2(-1, 0);
+				else
+					return Vector2(1, 0);
+			}
+			return Vector2(1, 0);
+		}
 	}
+	
+	printf("Intersections: %d\n", ints);
 	
 	return Vector2(0, 0);
 }
@@ -378,10 +435,10 @@ int Box::Contains(const Vector2& other)
 	int up = 0;
 	int down = 0;
 	
-	if (other.x >= base.x) right = true;
-	if (other.x <= (base.x + dim.x)) left = true;
-	if (other.y >= base.y) down = true;
-	if (other.y <= (base.y + dim.y)) up = true;
+	if (other.x > base.x) right = true;
+	if (other.x < (base.x + dim.x)) left = true;
+	if (other.y > base.y) down = true;
+	if (other.y < (base.y + dim.y)) up = true;
 	
 	if (right && left && up && down)
 		return true;
@@ -404,12 +461,14 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 	if (ileft = other.Intersects(left)) ints++;
 	if (iright = other.Intersects(right)) ints++;
 	
+	/*
 	printf("Segs: ");
 	if (itop) printf("top ");
 	if (ibot) printf("bot ");
 	if (ileft) printf("left ");
 	if (iright) printf("right ");
 	printf("\n");
+	*/
 	
 	if (ints == 1)
 	{
@@ -429,8 +488,12 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 				if (other.pos.x <= base.x) return other.IntersectionPoint(left);
 				if (other.pos.x <= (base.x + dim.x))
 				{
-					if (other.dir.x + other.dir.y > 0) return other.IntersectionPoint(top);
-					else return other.IntersectionPoint(left);
+					if (other.pos.y <= (base.y + dim.y))
+					{
+						if (other.dir.x >= 0) return other.IntersectionPoint(top);
+						else return other.IntersectionPoint(left);
+					}
+					else return other.IntersectionPoint(top);
 				}
 				return other.IntersectionPoint(top);
 			}
@@ -439,16 +502,20 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 				if (other.pos.x <= base.x) return other.IntersectionPoint(top);
 				if (other.pos.x <= (base.x + dim.x))
 				{
-					if (other.dir.y - other.dir.x > 0) return other.IntersectionPoint(top);
-					else return other.IntersectionPoint(right);
+					if (other.pos.y <= (base.y + dim.y))
+					{
+						if (other.dir.x <= 0) return other.IntersectionPoint(top);
+						else return other.IntersectionPoint(right);
+					}
+					return other.IntersectionPoint(top);
 				}
 				return other.IntersectionPoint(right);
 			}
 			if (ibot)
 			{
-				if (other.pos.y > base.y) 
+				if (other.pos.y >= base.y) 
 				{
-					if (other.pos.y < (base.y + dim.y))
+					if (other.pos.y <= (base.y + dim.y))
 					{
 						if (other.dir.y >= 0)
 							return other.IntersectionPoint(top);
@@ -467,9 +534,9 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 				if (other.pos.x <= base.x) return other.IntersectionPoint(left);
 				if (other.pos.x <= (base.x + dim.x))
 				{
-					if (other.pos.y > base.y)
+					if (other.pos.y >= base.y)
 					{
-						if (other.dir.y - other.dir.x > 0) return other.IntersectionPoint(left);
+						if (other.dir.x <= 0) return other.IntersectionPoint(left);
 						else return other.IntersectionPoint(bot);
 					}
 					return other.IntersectionPoint(bot);
@@ -478,16 +545,25 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 			}
 			if (iright)
 			{
-				if (isign >= 0) return other.IntersectionPoint(right);
-				else return other.IntersectionPoint(bot);
+				if (other.pos.x <= base.x) return other.IntersectionPoint(bot);
+				if (other.pos.x <= (base.x + dim.x))
+				{
+					if (other.pos.y >= base.y)
+					{
+						if (other.dir.x >= 0) return other.IntersectionPoint(right);
+						else return other.IntersectionPoint(bot);
+					}
+					return other.IntersectionPoint(bot);
+				}
+				return other.IntersectionPoint(right);
 			}
 		}
 		if (other.pos.x <= base.x) return other.IntersectionPoint(left);
 		else 
 		{
-			if (other.pos.x <= (base.x + dim.x))
+			if (other.pos.x < (base.x + dim.x))
 			{
-				if (other.dir.x < 0)
+				if (other.dir.x <= 0)
 					return other.IntersectionPoint(left);
 				else
 					return other.IntersectionPoint(right);

@@ -99,8 +99,14 @@ Attribute* AbstractObject::AddAttribute(EATTR a)
 // ------------------------------------
 {
 	if (!HasAttribute(a))
-	{
+	{	
 		Attribute* attr = Attribute::GetNewAttribute(a);
+		std::vector<EATTR >::iterator it;
+		for (it = attr->reqs.begin(); it != attr->reqs.end(); it++)
+		{
+			if (!HasAttribute(*it))
+				AddAttribute(*it);
+		}
 		m_attrs.push_back(attr);
 		return attr;
 	}
@@ -113,6 +119,12 @@ int AbstractObject::AddAttribute(Attribute* a)
 {
 	if (a && !HasAttribute(a->type))
 	{
+		std::vector<EATTR >::iterator it;
+		for (it = a->reqs.begin(); it != a->reqs.end(); it++)
+		{
+			if (!HasAttribute(*it))
+				AddAttribute(*it);
+		}
 		m_attrs.push_back(a);
 		return true;
 	}

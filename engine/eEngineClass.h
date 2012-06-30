@@ -83,8 +83,14 @@ private: // Members
 	
 	LARGE_INTEGER m_frequency;
 	LARGE_INTEGER m_currentTime;
-	float m_cumTime;
+	
+	// tock
+	float m_tockTime;
 	int m_tock;
+	
+	// physics time step
+	float m_cumTime;
+	
 	int m_lastGUID;
 };
 
