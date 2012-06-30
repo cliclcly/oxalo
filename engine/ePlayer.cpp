@@ -19,6 +19,7 @@ Player::Player() :
 	AddAttribute(new SpatialAttr(12, 12));
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	AddAttribute(new PhysicAttr());
+	AddAttribute(new StateAttr());
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);
@@ -42,10 +43,9 @@ int Player::RespondsTo(EMSG m)
 void Player::HandleMsg(Message* m)
 // ------------------------------------
 {
-	AbstractObject::HandleMsg(m);
 	if (m->type == EMSG_KEYBOARD)
 	{
-		KeyboardMessage* km = static_cast<KeyboardMessage* >(m);	
+		KeyboardMessage* km = static_cast<KeyboardMessage* >(m);
 		if (km->key == 'a')
 			MovingLeft = km->down;
 		if (km->key == 'd')
@@ -65,6 +65,8 @@ void Player::HandleMsg(Message* m)
 		{
 			printf("Vel: ");
 			pa->vel.print();
+			printf("\nPos: ");
+			sa->pos.print();
 			printf("\n");
 		}
 			
@@ -85,4 +87,7 @@ void Player::HandleMsg(Message* m)
 			MovingUp = false;
 		}
 	}
+	
+	// having this last is super important for collision for some reason...
+	AbstractObject::HandleMsg(m);
 }
