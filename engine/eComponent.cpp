@@ -10,6 +10,7 @@
 
 #include <windows.h>
 #include <GL/glut.h>
+#include <IL/ilut.h>
 
 #include <stdio.h>
 
@@ -52,6 +53,8 @@ void Component::SetAttribute(Attribute* ar)
 			rc->m_spatial = static_cast<SpatialAttr* >(ar);
 		if (ar->type == EATTR_GEOM)
 			rc->m_geom = static_cast<GeomAttr* >(ar);
+		if (ar->type == EATTR_TEX)
+			rc->m_tex = static_cast<TexAttr* >(ar);
 	}
 	if (type == ECOMP_PHYSIC)
 	{
@@ -86,17 +89,29 @@ void RenderComponent::HandleMsg(Message* m)
 {
 	if (m->type == EMSG_RENDER)
 	{
+		GLuint texture;
+		if(m_tex != NULL) 
+		{
+			texture = ilutGLLoadImage(m_tex->m_texture_path);
+		}else{
+			texture = ilutGLLoadImage((char*)"default.png");
+		}
+		glBindTexture(GL_TEXTURE_2D,texture);
 		switch(m_geom->m_shape)
 		{
 			case GEOM_SQUARE:
 				glPushMatrix();	
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
-				glColor4f(1.0, 0.0, 0.0, 1.0);
+				//glColor4f(1.0, 0.0, 0.0, 1.0);
 				
 				glBegin(GL_QUADS);
+					glTexCoord2f(0, 0);
 					glVertex2f(-0.5, -0.5);
+					glTexCoord2f(0, 1);
 					glVertex2f(-0.5, 0.5);
+					glTexCoord2f(1, 1);
 					glVertex2f(0.5, 0.5);
+					glTexCoord2f(1, 0);
 					glVertex2f(0.5, -0.5);
 				glEnd();
 				
@@ -105,17 +120,21 @@ void RenderComponent::HandleMsg(Message* m)
 			case GEOM_TRIANGLE:
 				glPushMatrix();	
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
-				glColor4f(1.0, 0.0, 0.0, 1.0);
+				//glColor4f(1.0, 0.0, 0.0, 1.0);
 				
 				glBegin(GL_TRIANGLES);
+					glTexCoord2f(.5, 1);
 					glVertex2f(0,.5);
+					glTexCoord2f(0, 0);
 					glVertex2f(.5,-.5);
+					glTexCoord2f(1, 0);
 					glVertex2f(-.5,-.5);
 				glEnd();
 				
 				glPopMatrix();
 				break;
 		}
+		glBindTexture(GL_TEXTURE_2D,0);
 	}
 }
 

@@ -160,6 +160,7 @@ int EngineClass::initialize(int width, int height)
 	AbstractKeyboardHandler* kh = static_cast<AbstractKeyboardHandler* >(static_cast<DumbObjectHandler* >(m_objectHandler));
 	m_keyboardStack->PushKeyboardHandler(kh);
 	
+	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	
 	// Timing

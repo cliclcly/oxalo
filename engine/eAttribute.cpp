@@ -111,3 +111,28 @@ int GeomAttr::IsAttribute(EATTR a)
 	if (a == EATTR_GEOM) return true;
 	return false;
 }
+
+// ------------------------------------
+TexAttr::TexAttr() :
+// ------------------------------------
+	Attribute(EATTR_TEX)
+{
+
+}
+
+// ------------------------------------
+TexAttr::TexAttr(char* path) :
+// ------------------------------------
+	Attribute(EATTR_TEX),
+	m_texture_path(path)
+{
+
+}
+
+// ------------------------------------
+int TexAttr::IsAttribute(EATTR a)
+// ------------------------------------
+{
+	if (a == EATTR_TEX) return true;
+	return false;
+}

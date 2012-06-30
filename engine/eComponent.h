@@ -53,6 +53,7 @@ public:
 	
 	SpatialAttr* m_spatial;
 	GeomAttr* m_geom;
+	TexAttr* m_tex;
 };
 
 // ------------------------------------
