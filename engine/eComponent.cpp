@@ -63,6 +63,8 @@ void Component::SetAttribute(Attribute* ar)
 			pc->m_spatial = static_cast<SpatialAttr* >(ar);
 		if (ar->type == EATTR_PHYSIC)
 			pc->m_physic = static_cast<PhysicAttr* >(ar);
+		if (ar->type == EATTR_STATE)
+			pc->m_state = static_cast<StateAttr* >(ar);
 	}
 	if (type == ECOMP_COLLISION)
 	{
@@ -145,6 +147,7 @@ PhysicComponent::PhysicComponent() :
 {
 	reqs.push_back(EATTR_SPATIAL);
 	reqs.push_back(EATTR_PHYSIC);
+	reqs.push_back(EATTR_STATE);
 }
 
 // ------------------------------------
@@ -154,8 +157,9 @@ void PhysicComponent::HandleMsg(Message* m)
 	if (m->type == EMSG_THINK)
 	{
 		ThinkMessage* tm = static_cast<ThinkMessage* >(m);
-		m_physic->vel = m_physic->vel + Vector2(0, -10 * tm->m_diff);
+		m_physic->lastpos = m_spatial->pos;
 		m_spatial->pos += m_physic->vel.scale(tm->m_diff);
+		m_physic->vel = m_physic->vel + Vector2(0, -10 * tm->m_diff);
 	}
 }
 
@@ -199,27 +203,25 @@ void CollisionComponent::HandleMsg(Message* m)
 		Box* mytr = mybox->Translate(m_spatial->pos.x, m_spatial->pos.y);
 		Box* itstr = itsbox->Translate(info->pos.x, info->pos.y);
 		
+		
 		if (mytr->IsColliding(itstr))
 		{
 			// find corner that is colliding
 			Vector2 point;
+			Vector2 offset;
 			if (itstr->Contains(mytr->base))
-				point = mytr->base;
+				offset = mytr->base - m_spatial->pos;
 			else if (itstr->Contains(mytr->base + Vector2(mytr->dim.x, 0)))
-				point = mytr->base + Vector2(mytr->dim.x, 0);
+				offset = mytr->base + Vector2(mytr->dim.x, 0) - m_spatial->pos;
 			else if (itstr->Contains(mytr->base + Vector2(0, mytr->dim.y)))
-				point = mytr->base + Vector2(0, mytr->dim.y);
+				offset = mytr->base + Vector2(0, mytr->dim.y) - m_spatial->pos;
 			else if (itstr->Contains(mytr->base + mytr->dim))
-				point = mytr->base + mytr->dim;
+				offset = mytr->base + mytr->dim - m_spatial->pos;
 		
 			SpatialAttr* itsSA = 
 				static_cast<SpatialAttr* >(info->other->GetAttribute(EATTR_SPATIAL));
 			SpatialAttr* mySA = 
-				static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));
-			
-			//itsSA->pos.x -= info->vel.x * cm->diff;
-			//itsSA->pos.y -= info->vel.y * cm->diff;
-			
+				static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));			
 			
 			if (parent->RespondsTo(EMSG_PHYSIC))
 			{
@@ -227,26 +229,41 @@ void CollisionComponent::HandleMsg(Message* m)
 					static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
 					
 				Vector2 vel = pa->vel;
-				Vector2 impact = itstr->IntersectionPoint(Ray2(point, -vel));
-				Vector2 pene = point - impact;
-				if (pene.length() > 0.01)
+				Vector2 impact = itstr->IntersectionPoint(Ray2(pa->lastpos + offset, vel));
+				Vector2 pene = m_spatial->pos + offset - impact;
+				
+				if (impact.x == 0 && impact.y == 0) break;
+				
+				point = m_spatial->pos;
+				printf("LastPos: "); (pa->lastpos + offset).print();
+				printf("\nPoint: "); (point + offset).print();
+				printf("\nPene: "); pene.print();
+				printf("\nOffset: "); offset.print();
+						
+				if (pene.length() > 0)
 				{
-					Vector2 n = itstr->NormalHitBy(point, -vel);
+					Vector2 n = itstr->NormalHitBy(pa->lastpos + offset, vel);
+					printf("\nNormal: "); n.print();
 					Vector2 pn = pene.project(n);
 					Vector2 newpos = pene - pn.scale(2);
-					mySA->pos += newpos;
+					mySA->pos += (pn.scale(-2) - pn.normalize().scale(0.001));
+					if (itstr->Contains(mySA->pos + offset))
+					{
+						printf("Bad\n");
+					}
 					
 					pn = vel.project(n);
 					Vector2 newvel = vel - pn.scale(2);
-					pa->vel = newvel.scale(.5);
+					pa->vel = newvel.scale(0.01);
 					
-					printf("Point: "); point.print();
-					printf("\nVel: "); vel.print(); 
-					printf("\nNegVel: "); (-vel).print();
-					printf("\nImpact: "); impact.print();
-					printf("\nPene: "); pene.print();
-					printf("\nNewpos: "); newpos.print();
-					printf("\n\n");
+					if (newpos.length() > 0)
+					{	
+						printf("\nVel: "); vel.print(); 
+						printf("\nNegVel: "); (-vel).print();
+						printf("\nImpact: "); impact.print();
+						printf("\nNewpos: "); mySA->pos.print();
+						printf("\n\n");
+					}
 				}
 				
 			}

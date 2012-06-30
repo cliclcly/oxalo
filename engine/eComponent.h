@@ -67,6 +67,7 @@ public:
 	
 	SpatialAttr* m_spatial;
 	PhysicAttr* m_physic;
+	StateAttr* m_state;
 };
 
 // ------------------------------------

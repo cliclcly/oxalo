@@ -8,6 +8,7 @@
 #define __EATTRIBUTE_H__
 
 #include "ePolygon.h"
+#include <vector>
 
 class Box;
 
@@ -17,7 +18,11 @@ enum EATTR
 	EATTR_SPATIAL,
 	EATTR_PHYSIC,
 	EATTR_GEOM,
+<<<<<<< HEAD
 	EATTR_TEX
+=======
+	EATTR_STATE
+>>>>>>> bd66b3cbe5056ab0f1c1f36bee70860783cfdc6a
 };
 
 enum GEOM
@@ -39,6 +44,7 @@ public:
 	static Attribute* GetNewAttribute(EATTR a);
 	
 	EATTR type;
+	std::vector<EATTR > reqs;
 };
 
 // ------------------------------------
@@ -65,6 +71,7 @@ public:
 	
 	Vector2 vel;
 	Vector2 accel;
+	Vector2 lastpos;
 };
 
 // ------------------------------------
@@ -93,4 +100,19 @@ public:
 	
 	char* m_texture_path;
 };
+
+// ------------------------------------
+class StateAttr : public Attribute
+// ------------------------------------
+{
+public:
+	StateAttr();
+	
+	virtual int IsAttribute(EATTR a);
+	
+	int falling;
+	int jumping;
+	int resting;
+};
+
 #endif
