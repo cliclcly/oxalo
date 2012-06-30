@@ -31,6 +31,10 @@ Attribute* Attribute::GetNewAttribute(EATTR a)
 		return new SpatialAttr();
 	if (a == EATTR_PHYSIC)
 		return new PhysicAttr();
+	if (a == EATTR_GEOM)
+		return new GeomAttr();
+	if (a == EATTR_STATE)
+		return new StateAttr();
 }
 
 // ------------------------------------
@@ -66,7 +70,7 @@ PhysicAttr::PhysicAttr() :
 	vel(Vector2(0, 0)),
 	accel(Vector2(0, 0))
 {
-
+	reqs.push_back(EATTR_SPATIAL);
 }
 
 // ------------------------------------
@@ -109,5 +113,25 @@ int GeomAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
 	if (a == EATTR_GEOM) return true;
+	return false;
+}
+
+// ------------------------------------
+StateAttr::StateAttr() :
+// ------------------------------------
+	Attribute(EATTR_STATE),
+	falling(true),
+	jumping(false),
+	resting(false)
+{
+
+}
+
+// ------------------------------------
+int StateAttr::IsAttribute(EATTR a)
+// ------------------------------------
+{
+	if (a == EATTR_STATE)
+		return true;
 	return false;
 }

@@ -192,22 +192,35 @@ void EngineClass::glDisplay()
 	
 	GLfloat diff = newTime.QuadPart - m_currentTime.QuadPart;
 	diff /= m_frequency.QuadPart;
-	m_cumTime += diff;
-	if (m_cumTime > 1)
+	
+	m_tockTime += diff;
+	if (m_tockTime > 1)
 	{
-		m_cumTime -= 1;
+		m_tockTime -= 1;
 		m_tock = 1;
 	}
 	
 	m_currentTime = newTime;
 	
-	// Think
-	ThinkMessage* tm = new ThinkMessage(diff, m_tock);
-	m_objectHandler->SendMessage(tm);
-	delete tm;
 	
-	// Collisions
-	m_objectHandler->FindCollisions(diff);
+	
+	float interval = 1.0/60.0;
+	m_cumTime += diff;
+	if (m_cumTime > interval)
+		{
+		// Think
+		ThinkMessage* tm = new ThinkMessage(interval, m_tock);
+		m_objectHandler->SendMessage(tm);
+		delete tm;
+		
+		// Collisions
+		int iterations = 1; int i;
+		for (i = 0; i < iterations; i++)
+		{
+			m_objectHandler->FindCollisions(diff);
+		}
+		m_cumTime -= interval;
+	}
 	
 	// Graphics
 	glClearColor(0.0, 0.0, 0.0, 1.0);
