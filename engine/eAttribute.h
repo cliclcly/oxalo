@@ -16,7 +16,8 @@ enum EATTR
 	EATTR_DEFAULT,
 	EATTR_SPATIAL,
 	EATTR_PHYSIC,
-	EATTR_GEOM
+	EATTR_GEOM,
+	EATTR_TEX
 };
 
 enum GEOM
@@ -80,4 +81,16 @@ public:
 	Box* m_bound;
 };
 
+// ------------------------------------
+class TexAttr : public Attribute
+// ------------------------------------
+{
+public:
+	TexAttr();
+	TexAttr(char*);
+	
+	virtual int IsAttribute(EATTR a);
+	
+	char* m_texture_path;
+};
 #endif
