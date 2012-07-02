@@ -10,6 +10,8 @@
 #include "ePolygon.h"
 #include <vector>
 
+#include <GL/gl.h>
+
 class Box;
 
 enum EATTR 
@@ -18,11 +20,8 @@ enum EATTR
 	EATTR_SPATIAL,
 	EATTR_PHYSIC,
 	EATTR_GEOM,
-<<<<<<< HEAD
-	EATTR_TEX
-=======
+	EATTR_TEXTURE,
 	EATTR_STATE
->>>>>>> bd66b3cbe5056ab0f1c1f36bee70860783cfdc6a
 };
 
 enum GEOM
@@ -81,6 +80,7 @@ class GeomAttr : public Attribute
 public:
 	GeomAttr();
 	GeomAttr(GEOM);
+	GeomAttr(Box* );
 	
 	virtual int IsAttribute(EATTR a);
 	
@@ -97,8 +97,12 @@ public:
 	TexAttr(char*);
 	
 	virtual int IsAttribute(EATTR a);
+	GLuint GetTexture();
 	
 	char* m_texture_path;
+	
+private:
+	GLuint m_texture;
 };
 
 // ------------------------------------

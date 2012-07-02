@@ -24,10 +24,4 @@ private:
 	float* m_zoom;
 };
 
-class Camerable
-{
-public:
-	virtual Camera* GetCamera() = 0;
-};
-
 #endif

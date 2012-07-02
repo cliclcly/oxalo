@@ -34,7 +34,7 @@ Component::Component(ECOMP type) :
 Component* Component::GetNewComponent(ECOMP c)
 // ------------------------------------
 {
-	if (c ==  ECOMP_RENDER)
+	if (c == ECOMP_RENDER)
 		return new RenderComponent();
 	if (c == ECOMP_PHYSIC)
 		return new PhysicComponent();
@@ -53,7 +53,7 @@ void Component::SetAttribute(Attribute* ar)
 			rc->m_spatial = static_cast<SpatialAttr* >(ar);
 		if (ar->type == EATTR_GEOM)
 			rc->m_geom = static_cast<GeomAttr* >(ar);
-		if (ar->type == EATTR_TEX)
+		if (ar->type == EATTR_TEXTURE)
 			rc->m_tex = static_cast<TexAttr* >(ar);
 	}
 	if (type == ECOMP_PHYSIC)
@@ -79,10 +79,14 @@ void Component::SetAttribute(Attribute* ar)
 // ------------------------------------
 RenderComponent::RenderComponent() :
 // ------------------------------------
-	Component(ECOMP_RENDER)
+	Component(ECOMP_RENDER),
+	m_spatial(0),
+	m_geom(0),
+	m_tex(0)
 {
 	reqs.push_back(EATTR_SPATIAL);
 	reqs.push_back(EATTR_GEOM);
+	reqs.push_back(EATTR_TEXTURE);
 }
 
 // ------------------------------------
@@ -91,13 +95,7 @@ void RenderComponent::HandleMsg(Message* m)
 {
 	if (m->type == EMSG_RENDER)
 	{
-		GLuint texture;
-		if(m_tex != NULL) 
-		{
-			texture = ilutGLLoadImage(m_tex->m_texture_path);
-		}else{
-			texture = ilutGLLoadImage((char*)"default.png");
-		}
+		GLuint texture = m_tex->GetTexture();
 		glBindTexture(GL_TEXTURE_2D,texture);
 		switch(m_geom->m_shape)
 		{
@@ -106,15 +104,17 @@ void RenderComponent::HandleMsg(Message* m)
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
 				//glColor4f(1.0, 0.0, 0.0, 1.0);
 				
+				Box* b = m_geom->m_bound;
+				
 				glBegin(GL_QUADS);
 					glTexCoord2f(0, 0);
-					glVertex2f(-0.5, -0.5);
+					glVertex2f(b->base.x, b->base.y);
 					glTexCoord2f(0, 1);
-					glVertex2f(-0.5, 0.5);
+					glVertex2f(b->base.x, b->base.y + b->dim.y);
 					glTexCoord2f(1, 1);
-					glVertex2f(0.5, 0.5);
+					glVertex2f(b->base.x + b->dim.x, b->base.y + b->dim.y);
 					glTexCoord2f(1, 0);
-					glVertex2f(0.5, -0.5);
+					glVertex2f(b->base.x + b->dim.x, b->base.y);
 				glEnd();
 				
 				glPopMatrix();
@@ -169,7 +169,7 @@ CollisionInfo::CollisionInfo() :
 	other(0),
 	pos(Vector2(0, 0)),
 	vel(Vector2(0, 0)),
-	bound(new Box(Vector2(0, 0), Vector2(0, 0)))
+	bound(0)
 {
 	
 }
@@ -206,9 +206,10 @@ void CollisionComponent::HandleMsg(Message* m)
 		
 		if (mytr->IsColliding(itstr))
 		{
+			//printf("GUID: %d other: %d\n", parent->GUID, info->other->GUID);
 			// find corner that is colliding
 			Vector2 point;
-			Vector2 offset;
+			Vector2 offset = Vector2(0, 0);
 			if (itstr->Contains(mytr->base))
 				offset = mytr->base - m_spatial->pos;
 			else if (itstr->Contains(mytr->base + Vector2(mytr->dim.x, 0)))
@@ -217,6 +218,8 @@ void CollisionComponent::HandleMsg(Message* m)
 				offset = mytr->base + Vector2(0, mytr->dim.y) - m_spatial->pos;
 			else if (itstr->Contains(mytr->base + mytr->dim))
 				offset = mytr->base + mytr->dim - m_spatial->pos;
+				
+			//printf("ox: %f oy: %f\n", offset.x, offset.y);
 		
 			SpatialAttr* itsSA = 
 				static_cast<SpatialAttr* >(info->other->GetAttribute(EATTR_SPATIAL));
@@ -235,18 +238,16 @@ void CollisionComponent::HandleMsg(Message* m)
 				if (impact.x == 0 && impact.y == 0) break;
 				
 				point = m_spatial->pos;
-				printf("LastPos: "); (pa->lastpos + offset).print();
-				printf("\nPoint: "); (point + offset).print();
-				printf("\nPene: "); pene.print();
-				printf("\nOffset: "); offset.print();
+				Vector2 oldvel = pa->vel;
+				
 						
 				if (pene.length() > 0)
 				{
-					Vector2 n = itstr->NormalHitBy(pa->lastpos + offset, vel);
-					printf("\nNormal: "); n.print();
+					Vector2 n = itstr->NormalHitBy(pa->lastpos + offset, vel);\
 					Vector2 pn = pene.project(n);
 					Vector2 newpos = pene - pn.scale(2);
 					mySA->pos += (pn.scale(-2) - pn.normalize().scale(0.001));
+					
 					if (itstr->Contains(mySA->pos + offset))
 					{
 						printf("Bad\n");
@@ -257,12 +258,21 @@ void CollisionComponent::HandleMsg(Message* m)
 					pa->vel = newvel.scale(0.01);
 					
 					if (newpos.length() > 0)
-					{	
-						printf("\nVel: "); vel.print(); 
-						printf("\nNegVel: "); (-vel).print();
-						printf("\nImpact: "); impact.print();
-						printf("\nNewpos: "); mySA->pos.print();
-						printf("\n\n");
+					{
+					
+					printf("MyBase: %f, %f\n", mytr->base.x, mytr->base.y);
+					printf("MyDim: %f, %f\n", mytr->dim.x, mytr->dim.y);
+					printf("ItsBase: %f, %f\n", itstr->base.x, itstr->base.y);
+					printf("ItsDim: %f, %f\n", itstr->dim.x, itstr->dim.y);
+					printf("LastPos: "); (pa->lastpos + offset).print();
+					printf("\nPoint: "); (point + offset).print();
+					printf("\nNormal: "); n.print();
+					printf("\nPene: "); pene.print();
+					printf("\nOffset: "); offset.print();
+					printf("\nVel: "); oldvel.print(); 
+					printf("\nImpact: "); impact.print();
+					printf("\nNewpos: "); mySA->pos.print();
+					printf("\n\n");
 					}
 				}
 				

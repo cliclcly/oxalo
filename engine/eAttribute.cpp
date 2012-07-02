@@ -7,6 +7,8 @@
 #include "eAttribute.h"
 #include "ePolygon.h"
 
+#include <IL/ilut.h>
+
 // ------------------------------------
 Attribute::Attribute() :
 // ------------------------------------
@@ -35,6 +37,8 @@ Attribute* Attribute::GetNewAttribute(EATTR a)
 		return new GeomAttr();
 	if (a == EATTR_STATE)
 		return new StateAttr();
+	if (a == EATTR_TEXTURE)
+		return new TexAttr();
 }
 
 // ------------------------------------
@@ -109,6 +113,18 @@ GeomAttr::GeomAttr(GEOM g) :
 }
 
 // ------------------------------------
+GeomAttr::GeomAttr(Box* b) :
+// ------------------------------------
+	Attribute(EATTR_GEOM),
+	m_shape(GEOM_SQUARE)
+{
+	if (b)
+		m_bound = b;
+	else
+		m_bound = new Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+}
+
+// ------------------------------------
 int GeomAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
@@ -119,7 +135,9 @@ int GeomAttr::IsAttribute(EATTR a)
 // ------------------------------------
 TexAttr::TexAttr() :
 // ------------------------------------
-	Attribute(EATTR_TEX)
+	Attribute(EATTR_TEXTURE),
+	m_texture_path(0),
+	m_texture(0)
 {
 
 }	
@@ -127,17 +145,36 @@ TexAttr::TexAttr() :
 // ------------------------------------
 TexAttr::TexAttr(char* path) :
 // ------------------------------------
-	Attribute(EATTR_TEX),
-	m_texture_path(path)
+	Attribute(EATTR_TEXTURE),
+	m_texture_path(path),
+	m_texture(0)
 {
 
+}	
+
+// ------------------------------------
+GLuint TexAttr::GetTexture()
+// ------------------------------------
+{
+	if (!m_texture)
+	{
+		if (m_texture_path)
+		{
+			m_texture = ilutGLLoadImage(m_texture_path);
+		}
+		else
+		{
+			m_texture = ilutGLLoadImage((char*)"default.png");
+		}
+	}
+	return m_texture;
 }
 
 // ------------------------------------
 int TexAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
-	if (a == EATTR_TEX) return true;
+	if (a == EATTR_TEXTURE) return true;
 }
 
 	

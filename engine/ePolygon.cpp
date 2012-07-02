@@ -182,7 +182,10 @@ int Ray2::Intersects(const Segment2& other) const
 {
 	Ray2 line = Ray2(other.p1, other.p2 - other.p1);
 	if (!Intersects(line))
+	{
+		printf("parallel\n");
 		return false;
+	}
 	Vector2 point = IntersectionPoint(line);
 	
 	int x = (point.x >= other.p1.x) && (point.x <= other.p2.x) ||
@@ -275,20 +278,21 @@ int Box::IsColliding(Box* other)
 {
 	int cx = 0;
 	int cy = 0;
-
+	
 	// check x collision
-	if ((base.x <= other->base.x) && ((base.x + dim.x) >= other->base.x))
+	if ((base.x >= other->base.x) && (base.x <= (other->base.x + other->dim.x)))
 		cx = 1;
-	if ((base.x <= (other->base.x + other->dim.x)) &&
-		((base.x + dim.x) >= (other->base.x + other->dim.x)))
+	if (((base.x + dim.x) >= other->base.x) && ((base.x + dim.x) <= (other->base.x + other->dim.x)))
 		cx = 1;
 		
-	// check y collision
-	if ((base.y <= other->base.y) && ((base.y + dim.y) >= other->base.y))
+	if ( (base.y >= other->base.y) && (base.y <= (other->base.y + other->dim.y) ) )
+	{
 		cy = 1;
-	if ((base.y <= (other->base.y + other->dim.y)) &&
-		((base.y + dim.y) >= (other->base.y + other->dim.y)))
+	}
+	if ( ( (base.y + dim.y) >= other->base.y) && ( (base.y + dim.y) <= (other->base.y + other->dim.y)))
+	{
 		cy = 1;
+	}
 		
 	// colliding in both directions?
 	if (cx && cy)
@@ -435,10 +439,10 @@ int Box::Contains(const Vector2& other)
 	int up = 0;
 	int down = 0;
 	
-	if (other.x > base.x) right = true;
-	if (other.x < (base.x + dim.x)) left = true;
-	if (other.y > base.y) down = true;
-	if (other.y < (base.y + dim.y)) up = true;
+	if (other.x >= base.x) right = true;
+	if (other.x <= (base.x + dim.x)) left = true;
+	if (other.y >= base.y) down = true;
+	if (other.y <= (base.y + dim.y)) up = true;
 	
 	if (right && left && up && down)
 		return true;
@@ -461,14 +465,14 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 	if (ileft = other.Intersects(left)) ints++;
 	if (iright = other.Intersects(right)) ints++;
 	
-	/*
+	
 	printf("Segs: ");
 	if (itop) printf("top ");
 	if (ibot) printf("bot ");
 	if (ileft) printf("left ");
 	if (iright) printf("right ");
 	printf("\n");
-	*/
+	
 	
 	if (ints == 1)
 	{
@@ -479,8 +483,8 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 	}
 	else
 	{
-		int sign = (other.pos.y - base.y) - (other.pos.x - base.x);
-		int isign = (other.pos.y - base.y) + (other.pos.x - base.x);
+		float sign = (other.pos.y - base.y) - (other.pos.x - base.x);
+		float isign = (other.pos.y - base.y) + (other.pos.x - base.x);
 		if (itop)
 		{
 			if (ileft)
@@ -490,6 +494,7 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 				{
 					if (other.pos.y <= (base.y + dim.y))
 					{
+						printf("here\n");
 						if (other.dir.x >= 0) return other.IntersectionPoint(top);
 						else return other.IntersectionPoint(left);
 					}

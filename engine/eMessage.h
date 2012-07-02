@@ -16,7 +16,7 @@ enum EMSG
 	EMSG_DEFAULT,
 	EMSG_RENDER,
 	EMSG_THINK,
-	EMSG_CAMERABLE,
+	EMSG_SPATIAL,
 	EMSG_PHYSIC,
 	EMSG_COLLISION,
 	EMSG_KEYBOARD
@@ -44,12 +44,6 @@ public:
 
 	float m_diff;
 	int tock;
-};
-
-class CamerableMessage : public Message
-{
-public:
-	CamerableMessage();
 };
 
 class CollisionMessage : public Message

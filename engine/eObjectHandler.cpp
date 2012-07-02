@@ -107,14 +107,14 @@ void DumbObjectHandler::FindCollisions(float diff)
 				static_cast<CollisionComponent* >(o2->GetComponent(ECOMP_COLLISION));
 			if (!cc2) continue;
 			
-			CollisionInfo* info2 = cc2->GetCollisionInfo();
+			//CollisionInfo* info2 = cc2->GetCollisionInfo();
 				
 			CollisionMessage* cm1 = new CollisionMessage(diff, info1);
-			CollisionMessage* cm2 = new CollisionMessage(diff, info2);
+			//CollisionMessage* cm2 = new CollisionMessage(diff, info2);
 			o2->HandleMsg(cm1);
-			o1->HandleMsg(cm2);
+			//o1->HandleMsg(cm2);
 			delete cm1;
-			delete cm2;
+			//delete cm2;
 		}
 	}
 }
@@ -124,16 +124,6 @@ void DumbObjectHandler::KeyDown(GLubyte key, int x, int y)
 // ------------------------------------
 {
 	m_keys[key] = 1;
-	if (key == 'q')
-	{
-		AbstractObject* o = GetNextObject(m_current);
-		if (o && o->RespondsTo(EMSG_CAMERABLE))
-		{
-			Camerable* c = static_cast<Camerable* >(static_cast<Square* >(o));
-			EngineClass::Instance()->SetCamera(c->GetCamera());
-			m_current = o;
-		}
-	}
 	
 	KeyboardMessage* km = new KeyboardMessage(key, x, y, 1);
 	
