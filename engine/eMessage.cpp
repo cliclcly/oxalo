@@ -41,14 +41,6 @@ ThinkMessage::ThinkMessage(float diff, int tock) :
 }
 
 // ------------------------------------
-CamerableMessage::CamerableMessage() :
-// ------------------------------------
-	Message(EMSG_CAMERABLE)
-{
-
-}
-
-// ------------------------------------
 CollisionMessage::CollisionMessage( float d, CollisionInfo* c) :
 // ------------------------------------
 	Message(EMSG_COLLISION),

@@ -34,7 +34,8 @@ int Player::RespondsTo(EMSG m)
 		m == EMSG_THINK ||
 		m == EMSG_COLLISION ||
 		m == EMSG_PHYSIC ||
-		m == EMSG_KEYBOARD)
+		m == EMSG_KEYBOARD ||
+		m == EMSG_SPATIAL)
 		return true;
 	return false;
 }
@@ -43,6 +44,7 @@ int Player::RespondsTo(EMSG m)
 void Player::HandleMsg(Message* m)
 // ------------------------------------
 {
+	AbstractObject::HandleMsg(m);
 	if (m->type == EMSG_KEYBOARD)
 	{
 		KeyboardMessage* km = static_cast<KeyboardMessage* >(m);
@@ -89,5 +91,5 @@ void Player::HandleMsg(Message* m)
 	}
 	
 	// having this last is super important for collision for some reason...
-	AbstractObject::HandleMsg(m);
+	//AbstractObject::HandleMsg(m);
 }

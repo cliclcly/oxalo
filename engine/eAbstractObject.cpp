@@ -146,9 +146,8 @@ Attribute* AbstractObject::GetAttribute(EATTR a)
 }
 
 // ------------------------------------
-Square::Square() :
+Square::Square()
 // ------------------------------------
-	m_camera(0)
 {
 	AddAttribute(new SpatialAttr(0, 0));
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
@@ -158,9 +157,8 @@ Square::Square() :
 }
 
 // ------------------------------------
-Square::Square(float x, float y) :
+Square::Square(float x, float y)
 // ------------------------------------
-	m_camera(0)
 {
 	AddAttribute(new SpatialAttr(x, y));
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
@@ -175,30 +173,15 @@ int Square::RespondsTo(EMSG m)
 {
 	if (m == EMSG_RENDER || 
 		m == EMSG_THINK ||
-		m == EMSG_CAMERABLE ||
+		m == EMSG_SPATIAL ||
 		m == EMSG_COLLISION)
 		return true;
 	return false;
 }
 
 // ------------------------------------
-Camera* Square::GetCamera()
+Triangle::Triangle()
 // ------------------------------------
-{
-	SpatialAttr* sa = 	
-		static_cast<SpatialAttr* >(GetAttribute(EATTR_SPATIAL));
-
-	if (!m_camera)
-	{
-		m_camera = new Camera(&(sa->pos.x), &(sa->pos.y), new float(4.0));
-	}
-	return m_camera;
-}
-
-// ------------------------------------
-Triangle::Triangle() :
-// ------------------------------------
-	m_camera(0)
 {
 	AddAttribute(new SpatialAttr(0, 0));
 	AddAttribute(new GeomAttr(GEOM_TRIANGLE));
@@ -207,9 +190,8 @@ Triangle::Triangle() :
 }
 
 // ------------------------------------
-Triangle::Triangle(float x, float y) :
+Triangle::Triangle(float x, float y)
 // ------------------------------------
-	m_camera(0)
 {
 	AddAttribute(new SpatialAttr(x, y));
 	AddAttribute(new GeomAttr(GEOM_TRIANGLE));
@@ -223,23 +205,9 @@ int Triangle::RespondsTo(EMSG m)
 {
 	if (m == EMSG_RENDER || 
 		m == EMSG_THINK ||
-		m == EMSG_CAMERABLE)
+		m == EMSG_SPATIAL)
 		return true;
 	return false;
-}
-
-// ------------------------------------
-Camera* Triangle::GetCamera()
-// ------------------------------------
-{
-	SpatialAttr* sa = 	
-		static_cast<SpatialAttr* >(GetAttribute(EATTR_SPATIAL));
-
-	if (!m_camera)
-	{
-		m_camera = new Camera(&(sa->pos.x), &(sa->pos.y), new float(4.0));
-	}
-	return m_camera;
 }
 
 // ------------------------------------
@@ -266,7 +234,7 @@ int PSquare::RespondsTo(EMSG m)
 {
 	if (m == EMSG_THINK ||
 		m == EMSG_RENDER ||
-		m == EMSG_CAMERABLE ||
+		m == EMSG_SPATIAL ||
 		m == EMSG_PHYSIC ||
 		m == EMSG_COLLISION)
 		return true;

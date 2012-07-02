@@ -100,10 +100,10 @@ void EngineClass::RemoveObject(int GUID)
 }
 
 // ------------------------------------
-void EngineClass::SetCamera(Camera* cam)
+void EngineClass::SetCamera(AbstractObject* o)
 // ------------------------------------
 {
-	Instance()->setCamera(cam);
+	Instance()->setCamera(o);
 }
 
 // ********************************************************
@@ -160,6 +160,8 @@ int EngineClass::initialize(int width, int height)
 	AbstractKeyboardHandler* kh = static_cast<AbstractKeyboardHandler* >(static_cast<DumbObjectHandler* >(m_objectHandler));
 	m_keyboardStack->PushKeyboardHandler(kh);
 	
+	m_camera = new Camera(new float(0.0), new float(0.0), new float(4.0));
+	
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	
@@ -205,7 +207,7 @@ void EngineClass::glDisplay()
 	
 	
 	
-	float interval = 1.0/60.0;
+	float interval = 1.0/100.0;
 	m_cumTime += diff;
 	if (m_cumTime > interval)
 		{
@@ -300,11 +302,21 @@ void EngineClass::removeObject(int GUID)
 }
 
 // ------------------------------------
-void EngineClass::setCamera(Camera* cam)
+void EngineClass::setCamera(AbstractObject* o)
 // ------------------------------------
 {
-	if (cam)
-		m_camera = cam;
+	if (o)
+	{
+		if (o->RespondsTo(EMSG_SPATIAL))
+		{
+			SpatialAttr* sa = 
+				static_cast<SpatialAttr* >(o->GetAttribute(EATTR_SPATIAL));
+			printf("X: %f Y: %f\n", sa->pos.x, sa->pos.y);
+			if (m_camera)
+				delete m_camera;
+			m_camera = new Camera(&(sa->pos.x), &(sa->pos.y), new float(4.0));
+		}
+	}
 }
 
 // ------------------------------------

@@ -41,7 +41,7 @@ public:
 };
 
 // ------------------------------------
-class Square : public AbstractObject, public Camerable
+class Square : public AbstractObject
 // ------------------------------------
 {
 public:
@@ -49,15 +49,10 @@ public:
 	Square(float x, float y);
 	
 	virtual int RespondsTo(EMSG m);
-	
-	virtual Camera* GetCamera();
-	
-private:
-	Camera* m_camera;
 };
 
 // ------------------------------------
-class Triangle : public AbstractObject, public Camerable
+class Triangle : public AbstractObject
 // ------------------------------------
 {
 public:
@@ -65,11 +60,6 @@ public:
 	Triangle(float x, float y);
 	
 	virtual int RespondsTo(EMSG m);
-	
-	virtual Camera* GetCamera();
-	
-private:
-	Camera* m_camera;
 };
 
 // ------------------------------------

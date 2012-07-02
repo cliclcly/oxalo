@@ -21,6 +21,7 @@
 #include "eCamera.h"
 #include "eDebug.h"
 #include "ePlayer.h"
+#include "eTerrainChunk.h"
 
 
 class EngineClass
@@ -43,7 +44,7 @@ public: // Methods
 	static void RemoveObject(int GUID);
 	
 	// Camera
-	static void SetCamera(Camera* );
+	static void SetCamera(AbstractObject* );
 	
 	void Shutdown();
 	
@@ -68,7 +69,7 @@ private: // Methods
 	void removeObject(int GUID);
 	
 	// Camera
-	void setCamera(Camera* );
+	void setCamera(AbstractObject* );
 	
 private: // Members
 	static EngineClass* m_pInstance;
