@@ -40,6 +40,10 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new PhysicComponent();
 	if (c == ECOMP_COLLISION)
 		return new CollisionComponent();
+	if (c == ECOMP_DAMAGEABLE)
+		return new DamageableComponent();
+	if (c == ECOMP_DROPS)
+		return new DropsComponent();
 }
 
 // ------------------------------------
@@ -74,6 +78,20 @@ void Component::SetAttribute(Attribute* ar)
 		if (ar->type == EATTR_GEOM)
 			cc->m_geom = static_cast<GeomAttr* >(ar);
 	}
+	if (type == ECOMP_DAMAGEABLE)
+	{
+		DamageableComponent* dac = static_cast<DamageableComponent* >(this);
+		if (ar->type == EATTR_HP)
+			dac->m_hp = static_cast<HPAttr* >(ar);
+	}
+	if (type == ECOMP_DROPS)
+	{
+		DropsComponent* dec = static_cast<DropsComponent* >(this);
+		if (ar->type == EATTR_HP)
+			dec->m_hp = static_cast<HPAttr* >(ar);
+		if (ar->type == EATTR_DROPS)
+			dec->m_drops = static_cast<DropsAttr* >(ar);
+	}
 }
 
 // ------------------------------------
@@ -100,6 +118,7 @@ void RenderComponent::HandleMsg(Message* m)
 		switch(m_geom->m_shape)
 		{
 			case GEOM_SQUARE:
+			{
 				glPushMatrix();	
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
 				//glColor4f(1.0, 0.0, 0.0, 1.0);
@@ -119,6 +138,7 @@ void RenderComponent::HandleMsg(Message* m)
 				
 				glPopMatrix();
 				break;
+			}
 			case GEOM_TRIANGLE:
 				glPushMatrix();	
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
@@ -334,3 +354,33 @@ CollisionInfo* CollisionComponent::GetCollisionInfo()
 	}
 }
 
+// ------------------------------------
+DamageableComponent::DamageableComponent() :
+// ------------------------------------
+	Component(ECOMP_DAMAGEABLE)
+{
+	reqs.push_back(EATTR_HP);
+}
+
+// ------------------------------------
+void DamageableComponent::HandleMsg(Message* m)
+// ------------------------------------
+{
+
+}
+
+// ------------------------------------
+DropsComponent::DropsComponent() :
+// ------------------------------------
+	Component(ECOMP_DROPS)
+{
+	reqs.push_back(EATTR_HP);
+	reqs.push_back(EATTR_DROPS);
+}
+
+// ------------------------------------
+void DropsComponent::HandleMsg(Message* m)
+// ------------------------------------
+{
+
+}
