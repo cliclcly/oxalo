@@ -197,3 +197,80 @@ int StateAttr::IsAttribute(EATTR a)
 		return true;
 	return false;
 }
+
+// ------------------------------------
+HPAttr::HPAttr() :
+// ------------------------------------
+	Attribute(EATTR_HP),
+	maxHP(100),
+	currentHP(100)
+{
+
+}
+
+// ------------------------------------
+HPAttr::HPAttr(int HP) :
+// ------------------------------------
+	Attribute(EATTR_HP),
+	maxHP(HP),
+	currentHP(HP)
+{
+	
+}
+
+// ------------------------------------
+int HPAttr::IsAttribute(EATTR a)
+// ------------------------------------
+{
+	if (a == EATTR_HP) return true;
+}
+
+// ------------------------------------
+ColorAttr::ColorAttr() :
+// ------------------------------------
+	Attribute(EATTR_COLOR),
+	m_color(COLOR_WHITE)
+{
+
+}
+
+// ------------------------------------
+ColorAttr::ColorAttr(COLOR c) :
+// ------------------------------------
+	Attribute(EATTR_COLOR),
+	m_color(c)
+{
+	
+}
+
+// ------------------------------------
+int ColorAttr::IsAttribute(EATTR a)
+// ------------------------------------
+{
+	if (a == EATTR_COLOR) return true;
+}
+
+// ------------------------------------
+DropsAttr::DropsAttr() :
+// ------------------------------------
+	Attribute(EATTR_DROPS)
+{
+
+}
+
+// ------------------------------------
+DropsAttr::DropsAttr(std::vector<int> id, std::vector<float> ic) :
+// ------------------------------------
+	Attribute(EATTR_DROPS),
+	ItemDrops(id),
+	ItemChances(ic)
+{
+
+}
+
+// ------------------------------------
+int DropsAttr::IsAttribute(EATTR a)
+// ------------------------------------
+{
+	if (a == EATTR_DROPS) return true;
+}
