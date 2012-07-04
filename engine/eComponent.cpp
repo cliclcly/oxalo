@@ -12,6 +12,8 @@
 #include <GL/glut.h>
 #include <IL/ilut.h>
 
+#include <math.h>
+
 #include <stdio.h>
 
 // ------------------------------------
@@ -100,6 +102,7 @@ void RenderComponent::HandleMsg(Message* m)
 		switch(m_geom->m_shape)
 		{
 			case GEOM_SQUARE:
+			{
 				glPushMatrix();	
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
 				//glColor4f(1.0, 0.0, 0.0, 1.0);
@@ -119,6 +122,7 @@ void RenderComponent::HandleMsg(Message* m)
 				
 				glPopMatrix();
 				break;
+			}
 			case GEOM_TRIANGLE:
 				glPushMatrix();	
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
@@ -157,9 +161,36 @@ void PhysicComponent::HandleMsg(Message* m)
 	if (m->type == EMSG_THINK)
 	{
 		ThinkMessage* tm = static_cast<ThinkMessage* >(m);
+		
 		m_physic->lastpos = m_spatial->pos;
+		
+		if (parent->RespondsTo(EMSG_STATE))
+		{
+			StateAttr* state = 
+				static_cast<StateAttr* >(parent->GetAttribute(EATTR_STATE));
+				
+			if (m_physic->vel.y <= 0.1 && m_physic->vel.y >= -0.1)
+			{
+				state->jumping = false;
+			}
+			
+			if (state->falling == true || state->jumping)
+				m_physic->vel.y = m_physic->lastvel.y;
+			else if (!state->jumping)
+				state->falling = true;
+		}
+		
 		m_spatial->pos += m_physic->vel.scale(tm->m_diff);
 		m_physic->vel = m_physic->vel + Vector2(0, -10 * tm->m_diff);
+		
+		if (parent->RespondsTo(EMSG_STATE))
+		{
+			StateAttr* state = 
+				static_cast<StateAttr* >(parent->GetAttribute(EATTR_STATE));
+			state->falling = true;
+		}
+		
+		m_physic->lastvel = m_physic->vel;
 	}
 }
 
@@ -194,9 +225,11 @@ void CollisionComponent::HandleMsg(Message* m)
 		CollisionMessage* cm = static_cast<CollisionMessage* >(m);
 		CollisionInfo* info = cm->info;
 		
+		// break if colliding objects are same object
 		if (parent->GUID == info->other->GUID)
 			break;
 		
+		// generate AABBs
 		Box* mybox = m_geom->m_bound;
 		Box* itsbox = info->bound;
 		
@@ -205,8 +238,7 @@ void CollisionComponent::HandleMsg(Message* m)
 		
 		
 		if (mytr->IsColliding(itstr))
-		{
-			//printf("GUID: %d other: %d\n", parent->GUID, info->other->GUID);
+		{			
 			// find corner that is colliding
 			Vector2 point;
 			Vector2 offset = Vector2(0, 0);
@@ -218,14 +250,22 @@ void CollisionComponent::HandleMsg(Message* m)
 				offset = mytr->base + Vector2(0, mytr->dim.y) - m_spatial->pos;
 			else if (itstr->Contains(mytr->base + mytr->dim))
 				offset = mytr->base + mytr->dim - m_spatial->pos;
-				
-			//printf("ox: %f oy: %f\n", offset.x, offset.y);
 		
 			SpatialAttr* itsSA = 
 				static_cast<SpatialAttr* >(info->other->GetAttribute(EATTR_SPATIAL));
 			SpatialAttr* mySA = 
-				static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));			
+				static_cast<SpatialAttr* >(parent->GetAttribute(EATTR_SPATIAL));	
+
+			// prevent gondola-ing
+			if (info->other->RespondsTo(EMSG_PHYSIC))
+			{
+				PhysicAttr* pa = 
+					static_cast<PhysicAttr* >(info->other->GetAttribute(EATTR_PHYSIC));
+				itsSA->pos = pa->lastpos;
+				pa->vel = Vector2(0, 0);
+			}
 			
+			// resolve collision
 			if (parent->RespondsTo(EMSG_PHYSIC))
 			{
 				PhysicAttr* pa = 
@@ -243,37 +283,58 @@ void CollisionComponent::HandleMsg(Message* m)
 						
 				if (pene.length() > 0)
 				{
-					Vector2 n = itstr->NormalHitBy(pa->lastpos + offset, vel);\
+					Vector2 n = itstr->NormalHitBy(pa->lastpos + offset, vel);
 					Vector2 pn = pene.project(n);
 					Vector2 newpos = pene - pn.scale(2);
-					mySA->pos += (pn.scale(-2) - pn.normalize().scale(0.001));
-					
-					if (itstr->Contains(mySA->pos + offset))
-					{
-						printf("Bad\n");
-					}
+					//mySA->pos += (pn.scale(-2) - pn.normalize().scale(0.001));
+					mySA->pos += (pn.scale(-2));
 					
 					pn = vel.project(n);
 					Vector2 newvel = vel - pn.scale(2);
 					pa->vel = newvel.scale(0.01);
 					
-					if (newpos.length() > 0)
+					// update state
+					if (parent->RespondsTo(EMSG_STATE))
 					{
-					
-					printf("MyBase: %f, %f\n", mytr->base.x, mytr->base.y);
-					printf("MyDim: %f, %f\n", mytr->dim.x, mytr->dim.y);
-					printf("ItsBase: %f, %f\n", itstr->base.x, itstr->base.y);
-					printf("ItsDim: %f, %f\n", itstr->dim.x, itstr->dim.y);
-					printf("LastPos: "); (pa->lastpos + offset).print();
-					printf("\nPoint: "); (point + offset).print();
-					printf("\nNormal: "); n.print();
-					printf("\nPene: "); pene.print();
-					printf("\nOffset: "); offset.print();
-					printf("\nVel: "); oldvel.print(); 
-					printf("\nImpact: "); impact.print();
-					printf("\nNewpos: "); mySA->pos.print();
-					printf("\n\n");
+						StateAttr* state = 
+							static_cast<StateAttr* >(parent->GetAttribute(EATTR_STATE));
+							
+						// cancel falling	
+						float angle = atan2(n.y, n.x);
+						if (angle >= 60 * 3.14159 / 180 && angle <= 120 * 3.14159 / 180)
+						{
+							printf("jumped\n");
+							state->jumped = false;
+							state->falling = false;
+						}
+						
+						// cancel jumping up into things
+						if (angle >= -120 * 3.14159 / 180 && angle <= -60 * 3.14159 / 180)
+						{
+							state->jumping = false;
+							state->falling = false;
+						}
 					}
+					
+					// debug information
+					/*
+					if (newpos.length() > 0)
+					{					
+						printf("MyBase: %f, %f\n", mytr->base.x, mytr->base.y);
+						printf("MyDim: %f, %f\n", mytr->dim.x, mytr->dim.y);
+						printf("ItsBase: %f, %f\n", itstr->base.x, itstr->base.y);
+						printf("ItsDim: %f, %f\n", itstr->dim.x, itstr->dim.y);
+						printf("LastPos: "); (pa->lastpos + offset).print();
+						printf("\nPoint: "); (point + offset).print();
+						printf("\nNormal: "); n.print();
+						printf("\nPene: "); pene.print();
+						printf("\nOffset: "); offset.print();
+						printf("\nVel: "); oldvel.print(); 
+						printf("\nImpact: "); impact.print();
+						printf("\nNewpos: "); (mySA->pos + offset).print();
+						printf("\n\n");
+					}
+					*/
 				}
 				
 			}
