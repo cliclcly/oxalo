@@ -20,7 +20,9 @@ enum ECOMP
 	ECOMP_DEFAULT,
 	ECOMP_RENDER,
 	ECOMP_PHYSIC,
-	ECOMP_COLLISION
+	ECOMP_COLLISION,
+	ECOMP_DAMAGEABLE,
+	ECOMP_DROPS
 };
 
 // ------------------------------------
@@ -99,6 +101,33 @@ public:
 	GeomAttr* m_geom;
 	
 	CollisionInfo* m_info;
+};
+
+// ------------------------------------
+class DamageableComponent : public Component
+// ------------------------------------
+{
+public:
+	DamageableComponent();
+	
+	virtual void HandleMsg(Message* );
+	
+	HPAttr* m_hp;
+	
+};
+
+// ------------------------------------
+class DropsComponent : public Component
+// ------------------------------------
+{
+public:
+	DropsComponent();
+	
+	virtual void HandleMsg(Message* );
+	
+	HPAttr* m_hp;
+	DropsAttr* m_drops;
+	
 };
 
 #endif
