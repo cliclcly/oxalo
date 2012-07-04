@@ -55,6 +55,7 @@ public:
 	int Intersects(const Ray2& other) const ;
 	int Intersects(const Segment2& other) const;
 	Vector2 IntersectionPoint(const Ray2& other) const;
+	float IntersectionTime(const Ray2& other) const;
 	Vector2 IntersectionPoint(const Segment2& other) const;
 	
 };

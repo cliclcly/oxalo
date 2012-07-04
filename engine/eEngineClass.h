@@ -7,8 +7,6 @@
 #ifndef _ENGINECLASS_H_
 #define _ENGINECLASS_H_
 
-#define OX_GL
-
 #include <windows.h>
 
 #include <GL/glut.h>
@@ -22,6 +20,7 @@
 #include "eDebug.h"
 #include "ePlayer.h"
 #include "eTerrainChunk.h"
+#include "ePlatform.h"
 
 
 class EngineClass
