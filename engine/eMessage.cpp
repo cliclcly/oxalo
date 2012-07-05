@@ -61,3 +61,19 @@ KeyboardMessage::KeyboardMessage( GLubyte key, int x, int y, int down) :
 {
 
 }
+
+// ------------------------------------
+DamageMessage::DamageMessage(int damage) :
+// ------------------------------------
+	Message(EMSG_DAMAGE),
+	damage(damage)
+{
+	
+}
+// ------------------------------------
+DropMessage::DropMessage() :
+// ------------------------------------
+	Message(EMSG_DROP)
+{
+	
+}

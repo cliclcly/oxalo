@@ -426,7 +426,20 @@ DamageableComponent::DamageableComponent() :
 void DamageableComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
-
+	switch(m->type)
+	{
+	case EMSG_DAMAGE:
+		DamageMessage* cm = static_cast<DamageMessage* >(m);
+		HPAttr* hpa = 
+				static_cast<HPAttr* >(parent->GetAttribute(EATTR_HP));
+		if (hpa->currentHP-cm->damage<=0)
+		{
+			hpa->currentHP=0;
+			//kill
+		}
+		hpa->currentHP-=cm->damage;
+	break;
+	}
 }
 
 // ------------------------------------
@@ -441,7 +454,11 @@ DropsComponent::DropsComponent() :
 void DropsComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
-
+	switch(m->type)
+	{
+	case EMSG_DROP:
+	break;
+	}
 }
 
 // ------------------------------------
