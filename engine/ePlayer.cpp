@@ -35,7 +35,8 @@ int Player::RespondsTo(EMSG m)
 		m == EMSG_COLLISION ||
 		m == EMSG_PHYSIC ||
 		m == EMSG_KEYBOARD ||
-		m == EMSG_SPATIAL)
+		m == EMSG_SPATIAL ||
+		m == EMSG_STATE)
 		return true;
 	return false;
 }
@@ -44,7 +45,7 @@ int Player::RespondsTo(EMSG m)
 void Player::HandleMsg(Message* m)
 // ------------------------------------
 {
-	AbstractObject::HandleMsg(m);
+	//AbstractObject::HandleMsg(m);
 	if (m->type == EMSG_KEYBOARD)
 	{
 		KeyboardMessage* km = static_cast<KeyboardMessage* >(m);
@@ -62,6 +63,7 @@ void Player::HandleMsg(Message* m)
 		ThinkMessage* tm = static_cast<ThinkMessage* >(m);
 		SpatialAttr* sa = static_cast<SpatialAttr* >(GetAttribute(EATTR_SPATIAL));
 		PhysicAttr* pa = static_cast<PhysicAttr* >(GetAttribute(EATTR_PHYSIC));
+		StateAttr* state = static_cast<StateAttr* >(GetAttribute(EATTR_STATE));
 		
 		if (tm->tock)
 		{
@@ -75,7 +77,6 @@ void Player::HandleMsg(Message* m)
 		
 		if (MovingLeft)
 		{
-			//debug(0, "Player:HandleMsg >> moving left");
 			pa->vel.x = -3;
 		}
 		if (MovingRight)
@@ -84,12 +85,20 @@ void Player::HandleMsg(Message* m)
 			pa->vel.x = 0;
 		if (MovingUp)
 		{
-			sa->pos.y += 0.01;
-			pa->vel.y = 7;
-			MovingUp = false;
+			if (!state->jumped)
+			{
+				printf("JUMP\n");
+				sa->pos.y += 0.01;
+				pa->vel.y = 7;
+				pa->lastvel.y = 7;
+				MovingUp = false;
+				state->jumped = true;
+				state->jumping = true;
+				state->falling = false;
+			}
 		}
 	}
 	
 	// having this last is super important for collision for some reason...
-	//AbstractObject::HandleMsg(m);
+	AbstractObject::HandleMsg(m);
 }

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include <float.h>
 #include "eDebug.h"
 
 using namespace std;
@@ -183,17 +184,11 @@ int Ray2::Intersects(const Segment2& other) const
 	Ray2 line = Ray2(other.p1, other.p2 - other.p1);
 	if (!Intersects(line))
 	{
-		printf("parallel\n");
 		return false;
 	}
-	Vector2 point = IntersectionPoint(line);
-	
-	int x = (point.x >= other.p1.x) && (point.x <= other.p2.x) ||
-			(point.x <= other.p1.x) && (point.x >= other.p2.x);
-	int y = (point.y >= other.p1.y) && (point.y <= other.p2.y) ||
-			(point.y <= other.p1.y) && (point.y >= other.p2.y);
 			
-	if (x && y)
+	float time = IntersectionTime(line);
+	if (time >= 0 && time <= 1)
 		return true;
 	return false;
 }
@@ -219,6 +214,26 @@ Vector2 Ray2::IntersectionPoint(const Ray2& other) const
 	
 	return Vector2(ix, iy);
 }
+
+// ------------------------------------
+float Ray2::IntersectionTime(const Ray2& other) const
+// ------------------------------------
+{
+	float det = dir.x * other.dir.y - dir.y * other.dir.x;
+	if (det == 0)
+		return FLT_MAX;
+	
+	float num = dir.y * (other.pos.x - pos.x) - dir.x * (other.pos.y - pos.y);
+	float tao = num / det;
+	float t;
+	if (dir.x != 0)
+		t = (other.pos.x - pos.x + tao * other.dir.x) / dir.x;
+	else
+		t = (other.pos.y - pos.y + tao * other.dir.y) / dir.y;
+		
+	return tao;
+}
+
 
 // ------------------------------------
 Vector2 Ray2::IntersectionPoint(const Segment2& other) const
@@ -418,8 +433,6 @@ Vector2 Box::NormalHitBy(const Vector2& pos, const Vector2& dir)
 		}
 	}
 	
-	printf("Intersections: %d\n", ints);
-	
 	return Vector2(0, 0);
 }
 
@@ -465,14 +478,14 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 	if (ileft = other.Intersects(left)) ints++;
 	if (iright = other.Intersects(right)) ints++;
 	
-	
+	/*
 	printf("Segs: ");
 	if (itop) printf("top ");
 	if (ibot) printf("bot ");
 	if (ileft) printf("left ");
 	if (iright) printf("right ");
 	printf("\n");
-	
+	*/
 	
 	if (ints == 1)
 	{

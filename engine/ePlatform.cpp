@@ -1,48 +1,49 @@
 // ****************************************************************************
-// eTerrainChunk.cpp
+// ePlatform.cpp
 //
 //
 // ****************************************************************************
 
-#include "eTerrainChunk.h"
+#include "ePlatform.h"
 
 // ------------------------------------
-TerrainChunk::TerrainChunk() : 
+Platform::Platform() :
 // ------------------------------------
-	height(0),
-	x(0)
+	_base(Vector2(0, 0)),
+	_dim(Vector2(0.5, 2))
 {
-	Box* b = new Box(Vector2(0, -100), Vector2(10, 100));
+	Box* b = new Box( Vector2(0, 0), Vector2(0.5, 2));
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
-
-	AddComponent(ECOMP_RENDER);
-	AddComponent(ECOMP_COLLISION);
-}
-
-// ------------------------------------
-TerrainChunk::TerrainChunk(float height, float x) : 
-// ------------------------------------
-	height(height),
-	x(x)
-{
-	Box* b = new Box(Vector2(0, -100), Vector2(10, 100 + height));
-	GeomAttr* g = new GeomAttr(b);
-	AddAttribute(g);
-	AddAttribute(new SpatialAttr(x, 0));
+	AddAttribute(new SpatialAttr(0, 0));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_COLLISION);
 }
 
 // ------------------------------------
-int TerrainChunk::RespondsTo(EMSG m)
+Platform::Platform(Vector2 base, Vector2 dim) :
+// ------------------------------------
+	_base(base),
+	_dim(dim)
+{
+	Box* b = new Box( Vector2(0, 0), dim);
+	GeomAttr* g = new GeomAttr(b);
+	AddAttribute(g);
+	AddAttribute(new SpatialAttr(base.x, base.y));
+	
+	AddComponent(ECOMP_RENDER);
+	AddComponent(ECOMP_COLLISION);
+}
+
+// ------------------------------------
+int Platform::RespondsTo(EMSG m)
 // ------------------------------------
 {
-	switch(m)
+	switch (m)
 	{
-	case EMSG_THINK: 
-	case EMSG_RENDER: 
+	case EMSG_RENDER:
+	case EMSG_THINK:
 	case EMSG_COLLISION:
 		return true;
 	default:
