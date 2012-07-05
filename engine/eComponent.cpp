@@ -46,6 +46,8 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new DamageableComponent();
 	if (c == ECOMP_DROPS)
 		return new DropsComponent();
+	if (c == ECOMP_HUD_HP)
+		return new HP_HUDComponent();
 }
 
 // ------------------------------------
@@ -93,6 +95,13 @@ void Component::SetAttribute(Attribute* ar)
 			dec->m_hp = static_cast<HPAttr* >(ar);
 		if (ar->type == EATTR_DROPS)
 			dec->m_drops = static_cast<DropsAttr* >(ar);
+	}
+	if (type == ECOMP_HUD_HP)
+	{
+		HP_HUDComponent* hp = 
+			static_cast<HP_HUDComponent* >(this);
+		if (ar->type == EATTR_HP)
+			hp->m_hp = static_cast<HPAttr* >(ar);
 	}
 }
 
@@ -309,7 +318,7 @@ void CollisionComponent::HandleMsg(Message* m)
 					
 					pn = vel.project(n);
 					Vector2 newvel = vel - pn.scale(2);
-					pa->vel = newvel.scale(0.01);
+					pa->vel = newvel.scale(0.001);
 					
 					// update state
 					if (parent->RespondsTo(EMSG_STATE))
@@ -321,7 +330,6 @@ void CollisionComponent::HandleMsg(Message* m)
 						float angle = atan2(n.y, n.x);
 						if (angle >= 60 * 3.14159 / 180 && angle <= 120 * 3.14159 / 180)
 						{
-							printf("jumped\n");
 							state->jumped = false;
 							state->falling = false;
 						}
@@ -442,4 +450,30 @@ void DropsComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
 
+}
+
+// ------------------------------------
+HP_HUDComponent::HP_HUDComponent() :
+// ------------------------------------
+	Component(ECOMP_HUD_HP)
+{
+	reqs.push_back(EATTR_HP);
+}
+
+// ------------------------------------
+void HP_HUDComponent::HandleMsg(Message* m)
+// ------------------------------------
+{
+	float pHealth = (float) m_hp->currentHP / (float) m_hp->maxHP;
+	if (m->type == EMSG_RENDER_HUD)
+	{
+		glColor4f(1.0, 0.0, 0.0, 1.0);
+		glBegin(GL_QUADS);
+			glVertex2f(0.05, 0.05);
+			glVertex2f(0.05, 0.10);
+			glVertex2f(0.45, 0.10);
+			glVertex2f(0.45, 0.05);
+		glEnd();
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+	}
 }

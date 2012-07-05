@@ -236,7 +236,14 @@ void EngineClass::glDisplay()
 	m_zoom = m_camera->GetZoom();
 	glReshape(m_windowW, m_windowH);
 	
-	RenderMessage* rm = new RenderMessage();
+	// render
+	RenderMessage* rm = new RenderMessage(EMSG_RENDER);
+	m_objectHandler->SendMessage(rm);
+	delete rm;
+	
+	// render HUD
+	glHUD(m_windowW, m_windowH);
+	rm = new RenderMessage(EMSG_RENDER_HUD);
 	m_objectHandler->SendMessage(rm);
 	delete rm;
 	
@@ -268,6 +275,20 @@ void EngineClass::glReshape(int w, int h)
 	
 	m_windowW = w;
 	m_windowH = h;
+}
+
+// ------------------------------------
+void EngineClass::glHUD(int w, int h)
+// ------------------------------------
+{
+	float ar = (float) w / (float) h;
+	if (h <= 0) h = 1;
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glViewport(0, 0, w, h);
+	gluOrtho2D(0, 1 * ar, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
 // ------------------------------------

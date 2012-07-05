@@ -60,6 +60,7 @@ private: // Methods
 	void glDisplay();
 	void glIdle();
 	void glReshape(int, int);
+	void glHUD(int, int);
 	void glKeyDown(GLubyte key, int x, int y);
 	void glKeyUp(GLubyte key, int x, int y);
 	
