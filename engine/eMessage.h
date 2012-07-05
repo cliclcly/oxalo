@@ -23,7 +23,9 @@ enum EMSG
 	EMSG_PHYSIC,
 	EMSG_COLLISION,
 	EMSG_KEYBOARD,
-	EMSG_STATE
+	EMSG_STATE,
+	EMSG_DROP,
+	EMSG_DAMAGE
 };
 
 class Message
@@ -70,4 +72,18 @@ public:
 	int down;
 };
 
+class DamageMessage : public Message
+{
+public:
+	DamageMessage(int damage);
+	
+	int damage;
+};
+
+class DropMessage : public Message
+{
+public:
+	DropMessage();
+	
+};
 #endif

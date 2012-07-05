@@ -162,6 +162,8 @@ int EngineClass::initialize(int width, int height)
 	
 	m_camera = new Camera(new float(0.0), new float(0.0), new float(4.0));
 	
+	glEnable (GL_BLEND);
+	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_DEPTH_TEST);
 	
