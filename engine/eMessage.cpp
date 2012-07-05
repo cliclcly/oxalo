@@ -23,9 +23,9 @@ Message::Message(EMSG m) :
 }
 
 // ------------------------------------
-RenderMessage::RenderMessage() :
+RenderMessage::RenderMessage(EMSG type) :
 // ------------------------------------
-	Message(EMSG_RENDER)
+	Message(type)
 {
 
 }
