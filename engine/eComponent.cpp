@@ -91,8 +91,6 @@ void Component::SetAttribute(Attribute* ar)
 	if (type == ECOMP_DROPS)
 	{
 		DropsComponent* dec = static_cast<DropsComponent* >(this);
-		if (ar->type == EATTR_HP)
-			dec->m_hp = static_cast<HPAttr* >(ar);
 		if (ar->type == EATTR_DROPS)
 			dec->m_drops = static_cast<DropsAttr* >(ar);
 	}
@@ -102,6 +100,9 @@ void Component::SetAttribute(Attribute* ar)
 			static_cast<HP_HUDComponent* >(this);
 		if (ar->type == EATTR_HP)
 			hp->m_hp = static_cast<HPAttr* >(ar);
+	if (type == ECOMP_AI)
+	{
+	
 	}
 }
 
@@ -433,7 +434,20 @@ DamageableComponent::DamageableComponent() :
 void DamageableComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
-
+	switch(m->type)
+	{
+	case EMSG_DAMAGE:
+		DamageMessage* cm = static_cast<DamageMessage* >(m);
+		HPAttr* hpa = 
+				static_cast<HPAttr* >(parent->GetAttribute(EATTR_HP));
+		if (hpa->currentHP-cm->damage<=0)
+		{
+			hpa->currentHP=0;
+			//kill
+		}
+		hpa->currentHP-=cm->damage;
+	break;
+	}
 }
 
 // ------------------------------------
@@ -441,12 +455,29 @@ DropsComponent::DropsComponent() :
 // ------------------------------------
 	Component(ECOMP_DROPS)
 {
-	reqs.push_back(EATTR_HP);
 	reqs.push_back(EATTR_DROPS);
 }
 
 // ------------------------------------
 void DropsComponent::HandleMsg(Message* m)
+// ------------------------------------
+{
+	switch(m->type)
+	{
+	case EMSG_DROP:
+	break;
+	}
+}
+
+// ------------------------------------
+AIComponent::AIComponent() :
+// ------------------------------------
+	Component(ECOMP_AI)
+{
+}
+
+// ------------------------------------
+void AIComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
 
