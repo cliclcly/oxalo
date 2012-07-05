@@ -87,10 +87,11 @@ void Component::SetAttribute(Attribute* ar)
 	if (type == ECOMP_DROPS)
 	{
 		DropsComponent* dec = static_cast<DropsComponent* >(this);
-		if (ar->type == EATTR_HP)
-			dec->m_hp = static_cast<HPAttr* >(ar);
 		if (ar->type == EATTR_DROPS)
 			dec->m_drops = static_cast<DropsAttr* >(ar);
+	}
+	if (type == ECOMP_AI)
+	{
 	}
 }
 
@@ -374,12 +375,25 @@ DropsComponent::DropsComponent() :
 // ------------------------------------
 	Component(ECOMP_DROPS)
 {
-	reqs.push_back(EATTR_HP);
 	reqs.push_back(EATTR_DROPS);
 }
 
 // ------------------------------------
 void DropsComponent::HandleMsg(Message* m)
+// ------------------------------------
+{
+
+}
+
+// ------------------------------------
+AIComponent::AIComponent() :
+// ------------------------------------
+	Component(ECOMP_AI)
+{
+}
+
+// ------------------------------------
+void AIComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
 

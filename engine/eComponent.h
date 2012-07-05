@@ -22,7 +22,8 @@ enum ECOMP
 	ECOMP_PHYSIC,
 	ECOMP_COLLISION,
 	ECOMP_DAMAGEABLE,
-	ECOMP_DROPS
+	ECOMP_DROPS,
+	ECOMP_AI
 };
 
 // ------------------------------------
@@ -125,9 +126,18 @@ public:
 	
 	virtual void HandleMsg(Message* );
 	
-	HPAttr* m_hp;
 	DropsAttr* m_drops;
 	
 };
 
+// ------------------------------------
+class AIComponent : public Component
+// ------------------------------------
+{
+public:
+	AIComponent();
+	
+	virtual void HandleMsg(Message* );
+	
+};
 #endif
