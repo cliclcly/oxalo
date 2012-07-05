@@ -72,7 +72,9 @@ PhysicAttr::PhysicAttr() :
 // ------------------------------------
 	Attribute(EATTR_PHYSIC),
 	vel(Vector2(0, 0)),
-	accel(Vector2(0, 0))
+	accel(Vector2(0, 0)),
+	lastpos(Vector2(0, 0)),
+	lastvel(Vector2(0, 0))
 {
 	reqs.push_back(EATTR_SPATIAL);
 }
@@ -184,6 +186,7 @@ StateAttr::StateAttr() :
 	Attribute(EATTR_STATE),
 	falling(true),
 	jumping(false),
+	jumped(true),
 	resting(false)
 {
 

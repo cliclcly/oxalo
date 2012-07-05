@@ -86,6 +86,7 @@ public:
 	Vector2 vel;
 	Vector2 accel;
 	Vector2 lastpos;
+	Vector2 lastvel;
 };
 
 // ------------------------------------
@@ -131,6 +132,7 @@ public:
 	
 	int falling;
 	int jumping;
+	int jumped;
 	int resting;
 };
 
