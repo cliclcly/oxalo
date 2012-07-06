@@ -132,7 +132,6 @@ public:
 };
 
 // ------------------------------------
-<<<<<<< HEAD
 class HP_HUDComponent : public Component
 // ------------------------------------
 {
@@ -144,7 +143,7 @@ public:
 	HPAttr* m_hp;
 };
 
-=======
+// ------------------------------------
 class AIComponent : public Component
 // ------------------------------------
 {
@@ -154,5 +153,4 @@ public:
 	virtual void HandleMsg(Message* );
 	
 };
->>>>>>> 8807b3e32391cad70f167f5ce392e8417e64ce09
 #endif

@@ -208,7 +208,6 @@ void EngineClass::glDisplay()
 	m_currentTime = newTime;
 	
 	
-	
 	float interval = 1.0/100.0;
 	m_cumTime += diff;
 	if (m_cumTime > interval)

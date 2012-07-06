@@ -100,6 +100,7 @@ void Component::SetAttribute(Attribute* ar)
 			static_cast<HP_HUDComponent* >(this);
 		if (ar->type == EATTR_HP)
 			hp->m_hp = static_cast<HPAttr* >(ar);
+	}
 	if (type == ECOMP_AI)
 	{
 	
