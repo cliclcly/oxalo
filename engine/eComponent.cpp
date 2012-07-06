@@ -189,6 +189,7 @@ PhysicComponent::PhysicComponent() :
 void PhysicComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
+	//printf("GUID: %d\n", parent->GUID);
 	if (m->type == EMSG_THINK)
 	{
 		ThinkMessage* tm = static_cast<ThinkMessage* >(m);

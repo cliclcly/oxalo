@@ -46,7 +46,10 @@ int AbstractObject::AddComponent(ECOMP c)
 // ------------------------------------
 {
 	Component* comp = Component::GetNewComponent(c);
-	if (!comp) return false;
+	if (!comp) 
+	{
+		return false;
+	}
 	
 	// ensure all attributes are present
 	std::vector<EATTR>::iterator it;

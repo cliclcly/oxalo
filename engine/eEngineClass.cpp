@@ -199,7 +199,7 @@ void EngineClass::glDisplay()
 	
 	GLfloat diff = newTime.QuadPart - m_currentTime.QuadPart;
 	diff /= m_frequency.QuadPart;
-	printf("diff: %f \n",diff);
+	
 	m_tockTime += diff;
 	if (m_tockTime > 1)
 	{
