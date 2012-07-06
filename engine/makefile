@@ -1,7 +1,7 @@
 OBJECTS = eEngineClass.o eAbstractKeyboardHandler.o eAbstractObject.o \
 			eCamera.o eObjectHandler.o eMessage.o ePolygon.o \
 			eAttribute.o eDebug.o eComponent.o ePlayer.o eTerrainChunk.o \
-			ePlatform.o
+			ePlatform.o genericEnemy.o
 DEVIL = c:\\devIL\\lib\\devIL.lib \
 		c:\\devIL\\lib\\ILU.lib \
 		c:\\devIL\\lib\\ILUT.lib
