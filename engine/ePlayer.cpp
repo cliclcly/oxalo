@@ -14,16 +14,20 @@ Player::Player() :
 	MovingLeft(false),
 	MovingRight(false),
 	MovingUp(false),
-	MovingDown(false)
+	MovingDown(false),
+	speed(5),
+	jumpPower(7)
 {
 	AddAttribute(new SpatialAttr(12, 12));
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	AddAttribute(new PhysicAttr());
 	AddAttribute(new StateAttr());
+	AddAttribute(new HPAttr());
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);
 	AddComponent(ECOMP_COLLISION);
+	AddComponent(ECOMP_HUD_HP);
 }
 
 // ------------------------------------
@@ -77,20 +81,19 @@ void Player::HandleMsg(Message* m)
 		
 		if (MovingLeft)
 		{
-			pa->vel.x = -3;
+			pa->vel.x = -speed;
 		}
 		if (MovingRight)
-			pa->vel.x = 3;
+			pa->vel.x = speed;
 		if (!MovingLeft && !MovingRight)
 			pa->vel.x = 0;
 		if (MovingUp)
 		{
 			if (!state->jumped)
 			{
-				printf("JUMP\n");
 				sa->pos.y += 0.01;
-				pa->vel.y = 7;
-				pa->lastvel.y = 7;
+				pa->vel.y = jumpPower;
+				pa->lastvel.y = jumpPower;
 				MovingUp = false;
 				state->jumped = true;
 				state->jumping = true;

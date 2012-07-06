@@ -23,6 +23,7 @@ enum ECOMP
 	ECOMP_COLLISION,
 	ECOMP_DAMAGEABLE,
 	ECOMP_DROPS,
+	ECOMP_HUD_HP,
 	ECOMP_AI
 };
 
@@ -128,6 +129,18 @@ public:
 	
 	DropsAttr* m_drops;
 	
+};
+
+// ------------------------------------
+class HP_HUDComponent : public Component
+// ------------------------------------
+{
+public:
+	HP_HUDComponent();
+	
+	virtual void HandleMsg(Message* );
+	
+	HPAttr* m_hp;
 };
 
 // ------------------------------------

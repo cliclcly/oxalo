@@ -39,12 +39,12 @@ Attribute* Attribute::GetNewAttribute(EATTR a)
 		return new StateAttr();
 	if (a == EATTR_TEXTURE)
 		return new TexAttr();
-	if (a == EATTR_DROPS)
-		return new DropsAttr();
 	if (a == EATTR_HP)
 		return new HPAttr();
 	if (a == EATTR_COLOR)
 		return new ColorAttr();
+	if (a == EATTR_DROPS)
+		return new DropsAttr();
 }
 
 // ------------------------------------
