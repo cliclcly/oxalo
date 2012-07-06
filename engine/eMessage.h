@@ -15,6 +15,9 @@ enum EMSG
 {
 	EMSG_DEFAULT,
 	EMSG_RENDER,
+	EMSG_RENDER_FOREGROUND,
+	EMSG_RENDER_BACKGROUND,
+	EMSG_RENDER_HUD,
 	EMSG_THINK,
 	EMSG_SPATIAL,
 	EMSG_PHYSIC,
@@ -37,7 +40,7 @@ public:
 class RenderMessage : public Message
 {
 public:
-	RenderMessage();
+	RenderMessage(EMSG type);
 };
 
 class ThinkMessage : public Message

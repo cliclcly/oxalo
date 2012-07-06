@@ -21,6 +21,9 @@ public:
 	int MovingRight;
 	int MovingUp;
 	int MovingDown;
+	
+	float speed;
+	float jumpPower;
 };
 
 #endif
