@@ -46,6 +46,8 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new DamageableComponent();
 	if (c == ECOMP_DROPS)
 		return new DropsComponent();
+	if (c == ECOMP_AI)
+		return new AIComponent();
 }
 
 // ------------------------------------
@@ -94,6 +96,7 @@ void Component::SetAttribute(Attribute* ar)
 	}
 	if (type == ECOMP_AI)
 	{
+	
 	}
 }
 

@@ -170,6 +170,8 @@ int EngineClass::initialize(int width, int height)
 	// Timing
 	QueryPerformanceFrequency(&m_frequency);
 	QueryPerformanceCounter(&m_currentTime);
+	printf("Freq: %f\n", m_frequency);
+	printf("Current: %f\n", m_currentTime);
 
 	// initialize devIL
 	ilInit();
@@ -197,7 +199,7 @@ void EngineClass::glDisplay()
 	
 	GLfloat diff = newTime.QuadPart - m_currentTime.QuadPart;
 	diff /= m_frequency.QuadPart;
-	
+	printf("diff: %f \n",diff);
 	m_tockTime += diff;
 	if (m_tockTime > 1)
 	{

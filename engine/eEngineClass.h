@@ -21,6 +21,7 @@
 #include "ePlayer.h"
 #include "eTerrainChunk.h"
 #include "ePlatform.h"
+#include "genericEnemy.h"
 
 
 class EngineClass

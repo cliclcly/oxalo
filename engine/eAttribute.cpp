@@ -39,6 +39,12 @@ Attribute* Attribute::GetNewAttribute(EATTR a)
 		return new StateAttr();
 	if (a == EATTR_TEXTURE)
 		return new TexAttr();
+	if (a == EATTR_DROPS)
+		return new DropsAttr();
+	if (a == EATTR_HP)
+		return new HPAttr();
+	if (a == EATTR_COLOR)
+		return new ColorAttr();
 }
 
 // ------------------------------------
@@ -177,6 +183,7 @@ int TexAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
 	if (a == EATTR_TEXTURE) return true;
+	return false;
 }
 
 	
@@ -226,6 +233,7 @@ int HPAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
 	if (a == EATTR_HP) return true;
+	return false;
 }
 
 // ------------------------------------
@@ -251,6 +259,7 @@ int ColorAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
 	if (a == EATTR_COLOR) return true;
+	return false;
 }
 
 // ------------------------------------
@@ -276,4 +285,5 @@ int DropsAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
 	if (a == EATTR_DROPS) return true;
+	return false;
 }
