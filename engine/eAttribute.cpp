@@ -183,6 +183,7 @@ int TexAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
 	if (a == EATTR_TEXTURE) return true;
+	return false;
 }
 
 	
