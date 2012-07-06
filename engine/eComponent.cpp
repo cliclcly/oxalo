@@ -46,6 +46,8 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new DamageableComponent();
 	if (c == ECOMP_DROPS)
 		return new DropsComponent();
+	if (c == ECOMP_AI)
+		return new AIComponent();
 	if (c == ECOMP_HUD_HP)
 		return new HP_HUDComponent();
 }
