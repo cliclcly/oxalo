@@ -13,6 +13,7 @@ GenericEnemy:: GenericEnemy()
 // ------------------------------------
 {
 	AddAttribute(new SpatialAttr(0, 0));
+	AddAttribute(new PhysicAttr());
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	AddAttribute(new HPAttr(100));
 	AddAttribute(new DropsAttr());
@@ -32,6 +33,7 @@ GenericEnemy::GenericEnemy(float x, float y)
 // ------------------------------------
 {
 	AddAttribute(new SpatialAttr(x, y));
+	AddAttribute(new PhysicAttr());
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	AddAttribute(new HPAttr(100));
 	AddAttribute(new DropsAttr());
@@ -39,6 +41,7 @@ GenericEnemy::GenericEnemy(float x, float y)
 	AddAttribute(new TexAttr((char*)"BluBlob.png"));
 	
 	AddComponent(ECOMP_RENDER);
+	AddComponent(ECOMP_PHYSIC);
 	AddComponent(ECOMP_COLLISION);
 	AddComponent(ECOMP_DAMAGEABLE);
 	AddComponent(ECOMP_DROPS);
@@ -51,6 +54,7 @@ int GenericEnemy::RespondsTo(EMSG m)
 {
 	if (m == EMSG_RENDER || 
 		m == EMSG_THINK ||
+		m == EMSG_PHYSIC ||
 		m == EMSG_SPATIAL ||
 		m == EMSG_COLLISION)
 		return true;
