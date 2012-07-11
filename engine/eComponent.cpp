@@ -50,6 +50,11 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new AIComponent();
 	if (c == ECOMP_HUD_HP)
 		return new HP_HUDComponent();
+	if (c == ECOMP_SLIME_AI)
+		return new AIComponent();
+	//---------  MODEL FOR AI ---------
+	if (c == ECOMP_ENEMY_AI)
+		return new AIComponent();
 }
 
 // ------------------------------------
@@ -104,6 +109,15 @@ void Component::SetAttribute(Attribute* ar)
 			hp->m_hp = static_cast<HPAttr* >(ar);
 	}
 	if (type == ECOMP_AI)
+	{
+	
+	}
+	if (type == ECOMP_SLIME_AI)
+	{
+	
+	}
+	//---------  MODEL FOR AI ---------
+	if (type == ECOMP_ENEMY_AI)
 	{
 	
 	}
