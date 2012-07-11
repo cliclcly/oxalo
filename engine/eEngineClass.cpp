@@ -200,6 +200,10 @@ void EngineClass::glDisplay()
 	
 	GLfloat diff = newTime.QuadPart - m_currentTime.QuadPart;
 	diff /= m_frequency.QuadPart;
+<<<<<<< HEAD
+=======
+	
+>>>>>>> a02bf887b13fc801f1a9f26afd328ea1aca827f3
 	m_tockTime += diff;
 	if (m_tockTime > 1)
 	{
@@ -208,7 +212,6 @@ void EngineClass::glDisplay()
 	}
 	
 	m_currentTime = newTime;
-	
 	
 	
 	float interval = 1.0/100.0;
