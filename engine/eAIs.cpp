@@ -4,26 +4,72 @@
 //
 // ****************************************************************************
 
-// ------------------------------------
-SlimeAIComponent::SlimeAIComponent() : AIComponent :
-// ------------------------------------
-	Component(ECOMP_SLIME_AI)
-{
+#include "eAIs.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
+// ------------------------------------
+SlimeAIComponent::SlimeAIComponent() : 
+// ------------------------------------
+	Component(ECOMP_SLIME_AI),
+	waitTime(0),
+	jumpPower(5),
+	movePower(3)
+{
+	reqs.push_back(EATTR_SPATIAL);
+	reqs.push_back(EATTR_PHYSIC);
+	reqs.push_back(EATTR_STATE);
 }
 
 // ------------------------------------
 void SlimeAIComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
-
+	switch(m->type)
+	{
+		case EMSG_THINK:
+		{
+			ThinkMessage* tm = static_cast<ThinkMessage* >(m);
+			
+			if(!m_state->jumped)
+			{
+				if(waitTime+tm->m_diff>1)
+				{
+					srand(time(NULL));
+					waitTime=0;
+					m_spatial->pos.y += 0.01;
+					m_physic->vel.y = jumpPower;
+					m_physic->vel.y = jumpPower;
+					m_physic->lastvel.y = jumpPower;
+					m_physic->vel.x = movePower;
+					if(rand()%2==1)
+					{
+						m_physic->vel.x *=-1;
+					}
+					m_state->jumped = true;
+					m_state->jumping = true;
+					m_state->falling = false;
+				}else{
+					m_physic->vel.x = 0;
+					waitTime+=tm->m_diff;
+				}
+			}else{
+			}
+			
+			break;
+		}
+		default:
+			break;
+	}
+	
 }
 
 
 //------------  MODEL FOR AI ------------
 
 // ------------------------------------
-EnemyAIComponent::EnemyAIComponent() : AIComponent :
+EnemyAIComponent::EnemyAIComponent() : 
 // ------------------------------------
 	Component(ECOMP_ENEMY_AI)
 {
@@ -31,7 +77,7 @@ EnemyAIComponent::EnemyAIComponent() : AIComponent :
 }
 
 // ------------------------------------
-void ENEMYAIComponent::HandleMsg(Message* m)
+void EnemyAIComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
 
