@@ -19,13 +19,14 @@ GenericEnemy:: GenericEnemy()
 	AddAttribute(new DropsAttr());
 	AddAttribute(new ColorAttr(COLOR_BLUE));
 	AddAttribute(new TexAttr((char*)"BluBlob.png"));
+	AddAttribute(new StateAttr());
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);
 	AddComponent(ECOMP_COLLISION);
 	AddComponent(ECOMP_DAMAGEABLE);
 	AddComponent(ECOMP_DROPS);
-	AddComponent(ECOMP_AI);
+	AddComponent(ECOMP_SLIME_AI);
 }
 
 // ------------------------------------
@@ -39,13 +40,14 @@ GenericEnemy::GenericEnemy(float x, float y)
 	AddAttribute(new DropsAttr());
 	AddAttribute(new ColorAttr(COLOR_BLUE));
 	AddAttribute(new TexAttr((char*)"BluBlob.png"));
+	AddAttribute(new StateAttr());
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);
 	AddComponent(ECOMP_COLLISION);
 	AddComponent(ECOMP_DAMAGEABLE);
 	AddComponent(ECOMP_DROPS);
-	AddComponent(ECOMP_AI);
+	AddComponent(ECOMP_SLIME_AI);
 }
 
 // ------------------------------------
@@ -56,7 +58,8 @@ int GenericEnemy::RespondsTo(EMSG m)
 		m == EMSG_THINK ||
 		m == EMSG_PHYSIC ||
 		m == EMSG_SPATIAL ||
-		m == EMSG_COLLISION)
+		m == EMSG_COLLISION ||
+		m == EMSG_STATE)
 		return true;
 	return false;
 }
