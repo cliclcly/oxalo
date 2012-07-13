@@ -7,6 +7,7 @@
 #include "eComponent.h"
 #include "eAbstractObject.h"
 #include "eDebug.h"
+#include "eAIs.h"
 
 #include <windows.h>
 #include <GL/glut.h>
@@ -50,6 +51,11 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new AIComponent();
 	if (c == ECOMP_HUD_HP)
 		return new HP_HUDComponent();
+	if (c == ECOMP_SLIME_AI)
+		return new SlimeAIComponent();
+	//---------  MODEL FOR AI ---------
+	if (c == ECOMP_ENEMY_AI)
+		return new EnemyAIComponent();
 }
 
 // ------------------------------------
@@ -104,6 +110,22 @@ void Component::SetAttribute(Attribute* ar)
 			hp->m_hp = static_cast<HPAttr* >(ar);
 	}
 	if (type == ECOMP_AI)
+	{
+	
+	}
+	if (type == ECOMP_SLIME_AI)
+	{
+		SlimeAIComponent* saic = static_cast<SlimeAIComponent* >(this);
+		if (ar->type == EATTR_SPATIAL)
+			saic->m_spatial = static_cast<SpatialAttr* >(ar);
+		if (ar->type == EATTR_PHYSIC)
+			saic->m_physic = static_cast<PhysicAttr* >(ar);
+		if (ar->type == EATTR_STATE)
+			saic->m_state = static_cast<StateAttr* >(ar);
+		
+	}
+	//---------  MODEL FOR AI ---------
+	if (type == ECOMP_ENEMY_AI)
 	{
 	
 	}
@@ -200,16 +222,20 @@ void PhysicComponent::HandleMsg(Message* m)
 		{
 			StateAttr* state = 
 				static_cast<StateAttr* >(parent->GetAttribute(EATTR_STATE));
-				
+			
 			if (m_physic->vel.y <= 0.1 && m_physic->vel.y >= -0.1)
 			{
 				state->jumping = false;
 			}
 			
 			if (state->falling == true || state->jumping)
+			{
 				m_physic->vel.y = m_physic->lastvel.y;
+			}
 			else if (!state->jumping)
+			{
 				state->falling = true;
+			}
 		}
 		
 		m_spatial->pos += m_physic->vel.scale(tm->m_diff);
