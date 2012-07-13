@@ -288,6 +288,17 @@ Box::Box(Vector2 b, Vector2 d)
 }
 
 // ------------------------------------
+void Box::Print()
+// ------------------------------------
+{
+	printf("Box: ");
+	base.print();
+	printf(" ");
+	dim.print();
+	printf("\n");
+}
+
+// ------------------------------------
 int Box::IsColliding(Box* other)
 // ------------------------------------
 {
@@ -591,4 +602,93 @@ Vector2 Box::IntersectionPoint(const Ray2& other)
 	}
 	
 	return Vector2(0, 0);
+}
+
+// ------------------------------------
+Mesh::Mesh()
+// ------------------------------------
+{
+
+}
+
+// ------------------------------------
+Mesh::Mesh(std::vector<Vector2 > points) :
+// ------------------------------------
+	points(points)
+{
+
+}
+
+// ------------------------------------
+void Mesh::AddPoint(const Vector2& point)
+// ------------------------------------
+{
+	points.push_back(point);
+}
+
+// ------------------------------------
+int Mesh::Size()
+// ------------------------------------
+{
+	return points.size();
+}
+
+// ------------------------------------
+void Mesh::Print()
+// ------------------------------------
+{
+	std::vector<Vector2 >::iterator it;
+	for (it = points.begin(); it != points.end(); it++)
+	{
+		(*it).print();
+		printf("\n");
+	}
+}
+
+// ------------------------------------
+void Mesh::Translate(const Vector2& other)
+// ------------------------------------
+{
+	std::vector<Vector2 >::iterator it;
+	for (it = points.begin(); it != points.end(); it++)
+	{
+		(*it).x += other.x;
+		(*it).y += other.y;
+	}
+}
+
+// ------------------------------------
+Box Mesh::GetAABB()
+// ------------------------------------
+{
+	float minx = FLT_MAX;
+	float maxx = -FLT_MAX;
+	float miny = FLT_MAX;
+	float maxy = -FLT_MAX;
+	
+	std::vector<Vector2 >::iterator it;
+	for (it = points.begin(); it != points.end(); it++)
+	{
+		Vector2 v = (*it);
+		if (v.x < minx) minx = v.x;
+		if (v.x > maxx) maxx = v.x;
+		if (v.y < miny) miny = v.y;
+		if (v.y > maxy) maxy = v.y;
+	}
+	
+	return Box( Vector2(minx, miny), Vector2(maxx - minx, maxy - miny));
+}
+
+// ------------------------------------
+Vector2 Mesh::Support(const Vector2& dir)
+// ------------------------------------
+{
+	Vector2 max;
+	float proj = -FLT_MAX;
+	
+	std::vector<Vector2 >::iterator it;
+	for (it = points.begin(); it != points.end(); it++)
+	{
+		
+	}
 }

@@ -24,7 +24,9 @@ enum ECOMP
 	ECOMP_DAMAGEABLE,
 	ECOMP_DROPS,
 	ECOMP_HUD_HP,
-	ECOMP_AI
+	ECOMP_AI,
+	ECOMP_SLIME_AI,
+	ECOMP_ENEMY_AI
 };
 
 // ------------------------------------
