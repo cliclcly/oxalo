@@ -77,7 +77,7 @@ Component* AbstractObject::GetComponent(ECOMP c)
 	std::vector<Component* >::iterator it;
 	for (it = m_comps.begin(); it != m_comps.end(); it++)
 	{
-		if ((*it)->type == ECOMP_COLLISION)
+		if ((*it)->type == c)
 			return (*it);
 	}
 	

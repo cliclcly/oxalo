@@ -91,4 +91,13 @@ public:
 	Vector2 IntersectionPoint(const Ray2& other);
 };
 
+// ------------------------------------
+class Polygon
+// ------------------------------------
+{
+public:
+	std::vector<Vector2 > points;
+	Vector2 pos;
+};
+
 #endif
