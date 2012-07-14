@@ -7,10 +7,13 @@
 #ifndef __EPOLYGON_H__
 #define __EPOLYGON_H__
 
+#include <vector>
+
 class Vector2;
 class Ray2;
 class Segment2;
 class Box;
+class Polygon;
 
 // ------------------------------------
 class Vector2
@@ -84,11 +87,32 @@ public:
 	Box();
 	Box( Vector2 , Vector2);
 	
+	void Print();
+	
 	int IsColliding(Box* other);
 	Vector2 NormalHitBy(const Vector2& pos, const Vector2& dir);
 	Box* Translate( float, float);
 	int Contains(const Vector2& pos);
 	Vector2 IntersectionPoint(const Ray2& other);
+};
+
+// ------------------------------------
+class Mesh
+// ------------------------------------
+{
+public:
+	Mesh();
+	Mesh(std::vector<Vector2 > points);
+
+	std::vector<Vector2 > points;
+	
+	void AddPoint(const Vector2& point);
+	int Size();
+	void Print();
+	void Translate(const Vector2& other);
+	
+	Box GetAABB();
+	Vector2 Support(const Vector2& dir);
 };
 
 #endif
