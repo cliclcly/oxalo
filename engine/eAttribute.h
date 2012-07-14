@@ -111,11 +111,16 @@ class TexAttr : public Attribute
 public:
 	TexAttr();
 	TexAttr(char*);
+	TexAttr(char*,float,float,float,float);
 	
 	virtual int IsAttribute(EATTR a);
 	GLuint GetTexture();
 	
 	char* m_texture_path;
+	
+	float m_tex_coord_x1, m_tex_coord_x2;
+	float m_tex_coord_y1, m_tex_coord_y2;
+	
 	
 private:
 	GLuint m_texture;

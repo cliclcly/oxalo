@@ -145,17 +145,38 @@ TexAttr::TexAttr() :
 // ------------------------------------
 	Attribute(EATTR_TEXTURE),
 	m_texture_path(0),
-	m_texture(0)
+	m_texture(0),
+	m_tex_coord_x1(0),
+	m_tex_coord_y1(0),
+	m_tex_coord_x2(1),
+	m_tex_coord_y2(1)
 {
 
 }	
-
 // ------------------------------------
 TexAttr::TexAttr(char* path) :
 // ------------------------------------
 	Attribute(EATTR_TEXTURE),
 	m_texture_path(path),
-	m_texture(0)
+	m_texture(0),
+	m_tex_coord_x1(0),
+	m_tex_coord_y1(0),
+	m_tex_coord_x2(1),
+	m_tex_coord_y2(1)
+{
+
+}	
+
+// ------------------------------------
+TexAttr::TexAttr(char* path,float x1, float x2, float y1, float y2) :
+// ------------------------------------
+	Attribute(EATTR_TEXTURE),
+	m_texture_path(path),
+	m_texture(0),
+	m_tex_coord_x1(x1),
+	m_tex_coord_y1(y1),
+	m_tex_coord_x2(x2),
+	m_tex_coord_y2(y2)
 {
 
 }	
