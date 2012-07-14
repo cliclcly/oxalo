@@ -213,19 +213,27 @@ void EngineClass::glDisplay()
 	float interval = 1.0/100.0;
 	m_cumTime += diff;
 	if (m_cumTime > interval)
+	{
+		if (USE_SPECULATIVE_CONTACTS)
 		{
+			
+		}
+		
 		// Think
 		ThinkMessage* tm = new ThinkMessage(interval, m_tock);
 		m_objectHandler->SendMessage(tm);
 		delete tm;
 		
 		// Collisions
-		int iterations = 1; int i;
-		for (i = 0; i < iterations; i++)
+		if (!USE_SPECULATIVE_CONTACTS)
 		{
-			m_objectHandler->FindCollisions(diff);
+			int iterations = 1; int i;
+			for (i = 0; i < iterations; i++)
+			{
+				m_objectHandler->FindCollisions(diff);
+			}
+			m_cumTime -= interval;
 		}
-		m_cumTime -= interval;
 	}
 	
 	// Graphics

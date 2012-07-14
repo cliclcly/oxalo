@@ -23,6 +23,7 @@
 #include "ePlatform.h"
 #include "genericEnemy.h"
 
+#define USE_SPECULATIVE_CONTACTS 0
 
 class EngineClass
 {
