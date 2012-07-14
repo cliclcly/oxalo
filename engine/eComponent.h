@@ -24,6 +24,7 @@ enum ECOMP
 	ECOMP_DAMAGEABLE,
 	ECOMP_DROPS,
 	ECOMP_HUD_HP,
+	ECOMP_ANIM,
 	ECOMP_AI,
 	ECOMP_SLIME_AI,
 	ECOMP_ENEMY_AI
@@ -143,6 +144,29 @@ public:
 	virtual void HandleMsg(Message* );
 	
 	HPAttr* m_hp;
+};
+
+// ------------------------------------
+class AnimateComponent : public Component
+// ------------------------------------
+{
+public:
+	AnimateComponent();
+	
+	virtual void HandleMsg(Message* );
+	
+	std::vector<int> m_startFrame;
+	std::vector<int> m_animLength;
+	std::vector<float> m_framerate;
+	int numAnimations;
+	int m_currentFrame;
+	int m_currentAnimation;
+	float m_accum_wait;
+	int m_numFrames;
+	
+	SpatialAttr* m_spatial;
+	GeomAttr* m_geom;
+	TexAttr* m_tex;
 };
 
 // ------------------------------------

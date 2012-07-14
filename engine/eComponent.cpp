@@ -51,6 +51,8 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new AIComponent();
 	if (c == ECOMP_HUD_HP)
 		return new HP_HUDComponent();
+	if (c == ECOMP_ANIM)
+		return new AnimateComponent();
 	if (c == ECOMP_SLIME_AI)
 		return new SlimeAIComponent();
 	//---------  MODEL FOR AI ---------
@@ -109,6 +111,16 @@ void Component::SetAttribute(Attribute* ar)
 		if (ar->type == EATTR_HP)
 			hp->m_hp = static_cast<HPAttr* >(ar);
 	}
+	if (type == ECOMP_ANIM)
+	{
+		AnimateComponent* anc = static_cast<AnimateComponent* >(this);
+		if (ar->type == EATTR_SPATIAL)
+			anc->m_spatial = static_cast<SpatialAttr* >(ar);
+		if (ar->type == EATTR_GEOM)
+			anc->m_geom = static_cast<GeomAttr* >(ar);
+		if (ar->type == EATTR_TEXTURE)
+			anc->m_tex = static_cast<TexAttr* >(ar);
+	}
 	if (type == ECOMP_AI)
 	{
 	
@@ -163,13 +175,13 @@ void RenderComponent::HandleMsg(Message* m)
 				Box* b = m_geom->m_bound;
 				
 				glBegin(GL_QUADS);
-					glTexCoord2f(0, 0);
+					glTexCoord2f(m_tex->m_tex_coord_x1, m_tex->m_tex_coord_y1);
 					glVertex2f(b->base.x, b->base.y);
-					glTexCoord2f(0, 1);
+					glTexCoord2f(m_tex->m_tex_coord_x1, m_tex->m_tex_coord_y2);
 					glVertex2f(b->base.x, b->base.y + b->dim.y);
-					glTexCoord2f(1, 1);
+					glTexCoord2f(m_tex->m_tex_coord_x2, m_tex->m_tex_coord_y2);
 					glVertex2f(b->base.x + b->dim.x, b->base.y + b->dim.y);
-					glTexCoord2f(1, 0);
+					glTexCoord2f(m_tex->m_tex_coord_x2, m_tex->m_tex_coord_y1);
 					glVertex2f(b->base.x + b->dim.x, b->base.y);
 				glEnd();
 				
@@ -536,5 +548,63 @@ void HP_HUDComponent::HandleMsg(Message* m)
 			glVertex2f(0.45, 0.05);
 		glEnd();
 		glColor4f(1.0, 1.0, 1.0, 1.0);
+	}
+}
+
+// ------------------------------------
+AnimateComponent::AnimateComponent() :
+// ------------------------------------
+	Component(ECOMP_ANIM)
+{
+	reqs.push_back(EATTR_TEXTURE);
+	//default values (will be reaplced with actual values later)
+	/*m_startFrame.push_back(0);
+	m_animLength.push_back(1);
+	m_framerate.push_back(1);
+	numAnimations=1;
+	m_currentFrame=0;
+	m_currentAnimation=0;
+	m_accum_wait=0;
+	m_numFrames=1;	*/
+	m_startFrame.push_back(0);
+	m_animLength.push_back(10);
+	m_framerate.push_back(10);
+	numAnimations=1;
+	m_currentFrame=0;
+	m_currentAnimation=0;
+	m_accum_wait=0;
+	m_numFrames=10;
+}
+
+// ------------------------------------
+void AnimateComponent::HandleMsg(Message* m)
+// ------------------------------------
+{
+	switch(m->type)
+	{
+		case(EMSG_THINK):
+		{
+			ThinkMessage* tm = static_cast<ThinkMessage* >(m);
+			m_accum_wait+=tm->m_diff;
+			if(m_accum_wait>1.0/m_framerate[m_currentAnimation])
+			{
+				m_accum_wait-=1.0/m_framerate[m_currentAnimation];
+				if (m_currentFrame==m_animLength[m_currentAnimation]-1)
+				{
+					m_currentFrame=0;
+				}else{
+					m_currentFrame++;
+				}
+				printf("numframes: %d\nstart frame: %d\ncurrentanimation: %d \ncurrentframe:%d\n",m_numFrames,m_startFrame[m_currentAnimation],m_currentAnimation,m_currentFrame);
+				printf("x1:%f\n",m_tex->m_tex_coord_x1);
+				m_tex->m_tex_coord_x1=((float)m_startFrame[m_currentAnimation]+(float)m_currentFrame)/((float)( m_numFrames));
+				m_tex->m_tex_coord_x2=((float)m_startFrame[m_currentAnimation]+(float)m_currentFrame+1.0)/((float)(m_numFrames));
+				m_tex->m_tex_coord_y1=0;
+				m_tex->m_tex_coord_y2=1;
+			}
+			break;
+		}
+		default:
+			break;
 	}
 }

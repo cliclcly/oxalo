@@ -27,6 +27,7 @@ GenericEnemy:: GenericEnemy()
 	AddComponent(ECOMP_DAMAGEABLE);
 	AddComponent(ECOMP_DROPS);
 	AddComponent(ECOMP_SLIME_AI);
+	AddComponent(ECOMP_ANIM);
 }
 
 // ------------------------------------
@@ -39,7 +40,8 @@ GenericEnemy::GenericEnemy(float x, float y)
 	AddAttribute(new HPAttr(100));
 	AddAttribute(new DropsAttr());
 	AddAttribute(new ColorAttr(COLOR_BLUE));
-	AddAttribute(new TexAttr((char*)"BluBlob.png"));
+	//AddAttribute(new TexAttr((char*)"BluBlob.png"));
+	AddAttribute(new TexAttr((char*)"BlobAnimation.png",0,0,.1,.1));
 	AddAttribute(new StateAttr());
 	
 	AddComponent(ECOMP_RENDER);
@@ -48,6 +50,7 @@ GenericEnemy::GenericEnemy(float x, float y)
 	AddComponent(ECOMP_DAMAGEABLE);
 	AddComponent(ECOMP_DROPS);
 	AddComponent(ECOMP_SLIME_AI);
+	AddComponent(ECOMP_ANIM);
 }
 
 // ------------------------------------
