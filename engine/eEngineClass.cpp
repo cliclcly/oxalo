@@ -17,6 +17,26 @@
 
 EngineClass* EngineClass::m_pInstance = NULL;
 
+//EngineClass::derp = 10;
+
+ std::string EngineClass::colorString[] = {"Red",
+									"Green",
+									"Blue",
+									"Orange",
+									"Purple",
+									"Yellow",
+									"White",
+									"Black"};
+
+ std::string EngineClass::animString[] = {"Still",
+									"Walking",
+									"Prejump",
+									"Jump",
+									"Landing",
+									"Attack",
+									"Die"};
+									
+
 // ------------------------------------
 EngineClass* EngineClass::Instance()
 // ------------------------------------
@@ -36,11 +56,69 @@ int EngineClass::Initialize(int width, int height)
 }
 
 // ------------------------------------
+void EngineClass::CreateAnimationDictionary()
+// ------------------------------------
+{
+	//will read config file eventually
+	//for now, will be hard coded
+	m_animationDictionary.insert(std::pair<  std::pair<std::string,COLOR>, 						AnimationSet*>
+					(std::pair<std::string,COLOR>(std::string("Slime"),COLOR_BLUE),				new AnimationSet(std::string("slime"))));
+					
+	AnimationSet* temp = m_animationDictionary.find(std::pair<std::string,COLOR>(std::string("Slime"),COLOR_BLUE))->second;
+	std::string base = "Textures/Slime/";
+	base += EngineClass::colorString[COLOR_BLUE];
+	base += "/";
+	for (int i=ANIM_FIRST;i<=ANIM_LAST;i++)
+	{
+		printf("loop: %d\n",i);
+		std::string path = base;
+		path+=EngineClass::animString[i];
+		path+=".png";
+		temp->BuildAnimationObject((ANIM)i,path,5,30);
+	}
+	std::map<std::pair<std::string,COLOR>, AnimationSet*>::iterator p = m_animationDictionary.begin();
+	for(p=m_animationDictionary.begin();p!=m_animationDictionary.end();p++)
+	{
+		printf("\n dictionary: %d %d\n",p->first.first.c_str(),p->first.second);
+		std::map<ANIM,AnimationObject*> tempSet = p->second->m_set;
+		std::map<ANIM,AnimationObject*>::iterator q = tempSet.begin();
+		for(q=tempSet.begin();q!=tempSet.end();q++)
+		{
+			printf("entry: %d\n",q->first);
+			AnimationObject* tempAO = q->second;
+			printf("values: %s %d %d\n", tempAO->m_path.c_str(),tempAO->m_frameNum, tempAO->m_frameRate);
+		}
+	}
+}
+
+// ------------------------------------
 void EngineClass::Run()
 // ------------------------------------
 {
 	EngineClass* instance = Instance();
 	instance->run();
+}
+
+// ------------------------------------
+AnimationSet * EngineClass::GetAnimationSet(std::string objType,COLOR color)
+// ------------------------------------
+{
+	EngineClass* instance = Instance();
+	std::map<std::pair<std::string,COLOR>, AnimationSet*>::iterator p = instance->m_animationDictionary.begin();
+	for(p=instance->m_animationDictionary.begin();p!=instance->m_animationDictionary.end();p++)
+	{
+		printf("\n dictionary: %d %d\n",p->first.first.c_str(),p->first.second);
+		std::map<ANIM,AnimationObject*> tempSet = p->second->m_set;
+		std::map<ANIM,AnimationObject*>::iterator q = tempSet.begin();
+		for(q=tempSet.begin();q!=tempSet.end();q++)
+		{
+			printf("entry: %d\n",q->first);
+			AnimationObject* tempAO = q->second;
+			printf("values: %s %d %d\n", tempAO->m_path.c_str(),tempAO->m_frameNum, tempAO->m_frameRate);
+		}
+	}
+	
+	return instance->m_animationDictionary.find(std::pair<std::string,COLOR>(objType,color))->second;
 }
 
 // ------------------------------------
@@ -179,6 +257,9 @@ int EngineClass::initialize(int width, int height)
 	iluInit();
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
+	
+	// initialize animation dictionary
+	CreateAnimationDictionary();
 	
 	return 0;
 }
