@@ -8,6 +8,8 @@
 #define _ENGINECLASS_H_
 
 #include <windows.h>
+#include <map>
+#include <string>
 
 #include <GL/glut.h>
 #include <IL/ilut.h>
@@ -22,8 +24,10 @@
 #include "eTerrainChunk.h"
 #include "ePlatform.h"
 #include "genericEnemy.h"
+#include "eAnimationObject.h"
 
 #define USE_SPECULATIVE_CONTACTS 0
+
 
 class EngineClass
 {
@@ -31,6 +35,7 @@ public: // Methods
 	static EngineClass* Instance();
 	static int Initialize(int, int);
 	static void Run();
+	static AnimationSet * GetAnimationSet(std::string,COLOR);
 	
 	// Static OpenGL Callbacks
 	static void GLDisplay();
@@ -44,18 +49,26 @@ public: // Methods
 	static int AddObject(AbstractObject* );
 	static void RemoveObject(int GUID);
 	
+	
+	static  std::string colorString[];
+	static  std::string animString[];
+	
+	
 	// Camera
 	static void SetCamera(AbstractObject* );
+		
 	
 	void Shutdown();
 	
 public: // Members
-
+	std::map<std::pair<std::string,COLOR>, AnimationSet*> m_animationDictionary;
+	
 private: // Methods
 	EngineClass();
 	~EngineClass();
 	
 	int initialize(int , int );
+	void CreateAnimationDictionary();
 	void run();
 	
 	// Private OpenGL Callbacks
@@ -87,6 +100,7 @@ private: // Members
 	LARGE_INTEGER m_frequency;
 	LARGE_INTEGER m_currentTime;
 	
+	
 	// tock
 	float m_tockTime;
 	int m_tock;
@@ -96,5 +110,6 @@ private: // Members
 	
 	int m_lastGUID;
 };
+
 
 #endif

@@ -41,4 +41,5 @@ public:
 	virtual void HandleMsg(Message* );
 };
 
+
 #endif

@@ -7,28 +7,18 @@
 #ifndef __ECOMPONENT_H__
 #define __ECOMPONENT_H__
 
+#include "enums.h"
+
 #include <vector>
 #include "eMessage.h"
 #include "eAttribute.h"
 #include "ePolygon.h"
+#include "eAnimationObject.h"
 
 class AbstractObject;
 class Box;
 
-enum ECOMP
-{
-	ECOMP_DEFAULT,
-	ECOMP_RENDER,
-	ECOMP_PHYSIC,
-	ECOMP_COLLISION,
-	ECOMP_DAMAGEABLE,
-	ECOMP_DROPS,
-	ECOMP_HUD_HP,
-	ECOMP_ANIM,
-	ECOMP_AI,
-	ECOMP_SLIME_AI,
-	ECOMP_ENEMY_AI
-};
+
 
 // ------------------------------------
 class Component
@@ -122,15 +112,15 @@ public:
 };
 
 // ------------------------------------
-class DropsComponent : public Component
+class DropComponent : public Component
 // ------------------------------------
 {
 public:
-	DropsComponent();
+	DropComponent();
 	
 	virtual void HandleMsg(Message* );
 	
-	DropsAttr* m_drops;
+	DropAttr* m_drop;
 	
 };
 
@@ -146,28 +136,6 @@ public:
 	HPAttr* m_hp;
 };
 
-// ------------------------------------
-class AnimateComponent : public Component
-// ------------------------------------
-{
-public:
-	AnimateComponent();
-	
-	virtual void HandleMsg(Message* );
-	
-	std::vector<int> m_startFrame;
-	std::vector<int> m_animLength;
-	std::vector<float> m_framerate;
-	int numAnimations;
-	int m_currentFrame;
-	int m_currentAnimation;
-	float m_accum_wait;
-	int m_numFrames;
-	
-	SpatialAttr* m_spatial;
-	GeomAttr* m_geom;
-	TexAttr* m_tex;
-};
 
 // ------------------------------------
 class AIComponent : public Component
@@ -177,6 +145,37 @@ public:
 	AIComponent();
 	
 	virtual void HandleMsg(Message* );
+	
+};
+
+// ------------------------------------
+class AnimateComponent : public Component
+// ------------------------------------
+{
+public:
+
+	AnimateComponent();
+	
+	virtual void HandleMsg(Message* );
+	GLuint ChangeAnimation(ANIM);
+	
+	AnimationSet * m_animation;
+	
+	int m_currentFrame;
+	ANIM m_currentAnimation;
+	float m_accum_wait;
+	int m_numFrames;
+	int m_framerate;
+	
+	SpatialAttr* m_spatial;
+	GeomAttr* m_geom;
+	TexAttr* m_tex;
+	TypeAttr* m_type;
+	
+	bool m_animInfoSet;
+	
+	char* Object;
+	COLOR color;
 	
 };
 #endif

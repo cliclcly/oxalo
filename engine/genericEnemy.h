@@ -19,6 +19,7 @@ public:
 	GenericEnemy(float x, float y);
 	
 	virtual int RespondsTo(EMSG m);
+	virtual void HandleMsg(Message* m);
 };
 
 #endif

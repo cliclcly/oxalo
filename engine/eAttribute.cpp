@@ -6,6 +6,7 @@
 
 #include "eAttribute.h"
 #include "ePolygon.h"
+#include "eEngineclass.h"
 
 #include <IL/ilut.h>
 
@@ -43,8 +44,10 @@ Attribute* Attribute::GetNewAttribute(EATTR a)
 		return new HPAttr();
 	if (a == EATTR_COLOR)
 		return new ColorAttr();
-	if (a == EATTR_DROPS)
-		return new DropsAttr();
+	if (a == EATTR_DROP)
+		return new DropAttr();
+	if (a == EATTR_TYPE)
+		return new TypeAttr();
 }
 
 // ------------------------------------
@@ -143,59 +146,42 @@ int GeomAttr::IsAttribute(EATTR a)
 // ------------------------------------
 TexAttr::TexAttr() :
 // ------------------------------------
-	Attribute(EATTR_TEXTURE),
-	m_texture_path(0),
-	m_texture(0),
-	m_tex_coord_x1(0),
-	m_tex_coord_y1(0),
-	m_tex_coord_x2(1),
-	m_tex_coord_y2(1)
+	Attribute(EATTR_TEXTURE)
 {
 
-}	
-// ------------------------------------
-TexAttr::TexAttr(char* path) :
-// ------------------------------------
-	Attribute(EATTR_TEXTURE),
-	m_texture_path(path),
-	m_texture(0),
-	m_tex_coord_x1(0),
-	m_tex_coord_y1(0),
-	m_tex_coord_x2(1),
-	m_tex_coord_y2(1)
-{
+}
 
+// ------------------------------------
+TexAttr::TexAttr(std::string objType, COLOR color) :
+// ------------------------------------
+	Attribute(EATTR_TEXTURE)
+{
+	std::string path = "Textures/";
+	path+= objType;
+	path+= "/";
+	if (color >= 0)
+	{
+		path+= EngineClass::colorString[color];
+		path+="/";
+	}
+	path+="Still.png";
+	m_texture = ilutGLLoadImage((char*)path.c_str());
 }	
 
 // ------------------------------------
-TexAttr::TexAttr(char* path,float x1, float x2, float y1, float y2) :
+void TexAttr::SetTexture(GLuint newTexture)
 // ------------------------------------
-	Attribute(EATTR_TEXTURE),
-	m_texture_path(path),
-	m_texture(0),
-	m_tex_coord_x1(x1),
-	m_tex_coord_y1(y1),
-	m_tex_coord_x2(x2),
-	m_tex_coord_y2(y2)
 {
-
-}	
+	printf("current Texture: %u\n", m_texture);
+	printf("setting texture %u\n",newTexture);
+	m_texture = 1;
+	printf("dooone!\n");
+}
 
 // ------------------------------------
 GLuint TexAttr::GetTexture()
 // ------------------------------------
 {
-	if (!m_texture)
-	{
-		if (m_texture_path)
-		{
-			m_texture = ilutGLLoadImage(m_texture_path);
-		}
-		else
-		{
-			m_texture = ilutGLLoadImage((char*)"default.png");
-		}
-	}
 	return m_texture;
 }
 
@@ -206,7 +192,6 @@ int TexAttr::IsAttribute(EATTR a)
 	if (a == EATTR_TEXTURE) return true;
 	return false;
 }
-
 	
 // ------------------------------------
 StateAttr::StateAttr() :
@@ -284,27 +269,54 @@ int ColorAttr::IsAttribute(EATTR a)
 }
 
 // ------------------------------------
-DropsAttr::DropsAttr() :
+DropAttr::DropAttr() :
 // ------------------------------------
-	Attribute(EATTR_DROPS)
+	Attribute(EATTR_DROP)
 {
 
 }
 
 // ------------------------------------
-DropsAttr::DropsAttr(std::vector<int> id, std::vector<float> ic) :
+DropAttr::DropAttr(std::vector<int> id, std::vector<float> ic) :
 // ------------------------------------
-	Attribute(EATTR_DROPS),
-	ItemDrops(id),
-	ItemChances(ic)
+	Attribute(EATTR_DROP),
+	ItemDrop(id),
+	ItemChance(ic)
 {
 
 }
 
 // ------------------------------------
-int DropsAttr::IsAttribute(EATTR a)
+int DropAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
-	if (a == EATTR_DROPS) return true;
+	if (a == EATTR_DROP) return true;
 	return false;
 }
+// ------------------------------------
+TypeAttr::TypeAttr():
+// ------------------------------------
+	Attribute(EATTR_TYPE),
+	m_type(std::string("default"))
+{
+
+}
+
+// ------------------------------------
+TypeAttr::TypeAttr(std::string type):
+// ------------------------------------
+	Attribute(EATTR_TYPE),
+	m_type(type)
+{
+
+}
+
+// ------------------------------------
+int TypeAttr::IsAttribute(EATTR a)
+// ------------------------------------
+{
+	if (a == EATTR_DROP) return true;
+	return false;
+}
+
+
