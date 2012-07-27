@@ -19,22 +19,22 @@ EngineClass* EngineClass::m_pInstance = NULL;
 
 //EngineClass::derp = 10;
 
- std::string EngineClass::colorString[] = {"Red",
-									"Green",
-									"Blue",
-									"Orange",
-									"Purple",
-									"Yellow",
-									"White",
-									"Black"};
+ std::string EngineClass::colorString[] = {"red",
+									"green",
+									"blue",
+									"orange",
+									"purple",
+									"yellow",
+									"white",
+									"black"};
 
- std::string EngineClass::animString[] = {"Still",
-									"Walking",
-									"Prejump",
-									"Jump",
-									"Landing",
-									"Attack",
-									"Die"};
+ std::string EngineClass::animString[] = {"still",
+									"walking",
+									"prejump",
+									"jump",
+									"landing",
+									"attack",
+									"die"};
 									
 
 // ------------------------------------
@@ -59,6 +59,8 @@ int EngineClass::Initialize(int width, int height)
 void EngineClass::CreateAnimationDictionary()
 // ------------------------------------
 {
+	//for
+
 	//will read config file eventually
 	//for now, will be hard coded
 	m_animationDictionary.insert(std::pair<  std::pair<std::string,COLOR>, 						AnimationSet*>
@@ -258,8 +260,11 @@ int EngineClass::initialize(int width, int height)
 	ilutInit();
 	ilutRenderer(ILUT_OPENGL);
 	
+	//load enemy configs
+	loadEnemies();
 	// initialize animation dictionary
 	CreateAnimationDictionary();
+	
 	
 	return 0;
 }
@@ -430,6 +435,51 @@ void EngineClass::setCamera(AbstractObject* o)
 			m_camera = new Camera(&(sa->pos.x), &(sa->pos.y), new float(4.0));
 		}
 	}
+}
+// ------------------------------------
+void EngineClass::loadEnemies()
+// ------------------------------------
+{
+	enemyTypes = new XMLNode("EnemyDictionary");
+
+	printf("loading\n");
+	WIN32_FIND_DATA tempStore;
+	printf("loading\n");
+	HANDLE search = FindFirstFile("Enemies/*.config",&tempStore);
+	printf("loading\n");
+	if (search == INVALID_HANDLE_VALUE)
+	{
+		printf("Invalid file handle.\n");
+	}
+	else
+	{
+		std::string base = "Enemies/";
+		base+=tempStore.cFileName;
+		XMLNode * temp = XMLParser::Parse(base);
+		if(verifyEnemy(temp))
+		{
+			enemyTypes->m_children.push_back(temp);
+		}
+		printf ("First file name is %s.\n", base.c_str());
+		while (FindNextFile(search,&tempStore)!=false)
+		{
+			std::string base = "Enemies/";
+			base+=tempStore.cFileName;
+			temp = XMLParser::Parse(base);
+			if(verifyEnemy(temp))
+			{
+				enemyTypes->m_children.push_back(temp);
+			}
+			printf ("Next file name is %s.\n",base.c_str());
+		}
+	}
+}
+
+// ------------------------------------
+bool EngineClass::verifyEnemy(XMLNode* toVerify)
+// ------------------------------------
+{
+	return true;
 }
 
 // ------------------------------------

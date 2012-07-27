@@ -25,6 +25,7 @@
 #include "ePlatform.h"
 #include "genericEnemy.h"
 #include "eAnimationObject.h"
+#include "eXMLParser.h"
 
 #define USE_SPECULATIVE_CONTACTS 0
 
@@ -86,6 +87,10 @@ private: // Methods
 	// Camera
 	void setCamera(AbstractObject* );
 	
+	//enemies
+	void loadEnemies();
+	bool verifyEnemy(XMLNode*);
+	
 private: // Members
 	static EngineClass* m_pInstance;
 	
@@ -100,6 +105,8 @@ private: // Members
 	LARGE_INTEGER m_frequency;
 	LARGE_INTEGER m_currentTime;
 	
+	//enemies
+	XMLNode * enemyTypes;
 	
 	// tock
 	float m_tockTime;
