@@ -10,9 +10,6 @@
 
 int main(int argc, char* argv[])
 {
-	
-	XMLParser::Parse(std::string("Enemies/Slime.config"));
-	
 	int result = EngineClass::Initialize(600, 480);
 	
 	Square* s1 = new Square(10, 10);

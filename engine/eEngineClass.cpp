@@ -64,10 +64,10 @@ void EngineClass::CreateAnimationDictionary()
 	//will read config file eventually
 	//for now, will be hard coded
 	m_animationDictionary.insert(std::pair<  std::pair<std::string,COLOR>, 						AnimationSet*>
-					(std::pair<std::string,COLOR>(std::string("Slime"),COLOR_BLUE),				new AnimationSet(std::string("slime"))));
+					(std::pair<std::string,COLOR>(std::string("slime"),COLOR_BLUE),				new AnimationSet(std::string("slime"))));
 					
-	AnimationSet* temp = m_animationDictionary.find(std::pair<std::string,COLOR>(std::string("Slime"),COLOR_BLUE))->second;
-	std::string base = "Textures/Slime/";
+	AnimationSet* temp = m_animationDictionary.find(std::pair<std::string,COLOR>(std::string("slime"),COLOR_BLUE))->second;
+	std::string base = "Textures/slime/";
 	base += EngineClass::colorString[COLOR_BLUE];
 	base += "/";
 	for (int i=ANIM_FIRST;i<=ANIM_LAST;i++)
@@ -440,7 +440,7 @@ void EngineClass::setCamera(AbstractObject* o)
 void EngineClass::loadEnemies()
 // ------------------------------------
 {
-	enemyTypes = new XMLNode("EnemyDictionary");
+	XMLNode * master = new XMLNode("EnemyDictionary");
 
 	printf("loading\n");
 	WIN32_FIND_DATA tempStore;
@@ -458,7 +458,7 @@ void EngineClass::loadEnemies()
 		XMLNode * temp = XMLParser::Parse(base);
 		if(verifyEnemy(temp))
 		{
-			enemyTypes->m_children.push_back(temp);
+			master->m_children.push_back(temp);
 		}
 		printf ("First file name is %s.\n", base.c_str());
 		while (FindNextFile(search,&tempStore)!=false)
@@ -468,7 +468,7 @@ void EngineClass::loadEnemies()
 			temp = XMLParser::Parse(base);
 			if(verifyEnemy(temp))
 			{
-				enemyTypes->m_children.push_back(temp);
+				master->m_children.push_back(temp);
 			}
 			printf ("Next file name is %s.\n",base.c_str());
 		}
