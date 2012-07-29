@@ -25,7 +25,16 @@ XMLNode::XMLNode(std::string title):
 XMLNode * XMLNode::findChild(std::string findTitle)
 // ------------------------------------
 {
-	return new XMLNode();
+	//printf("in node with title (%s) looking for (%s)\n",m_title.c_str(),findTitle.c_str());
+	for(int i=0;i<m_children.size();i++)
+	{
+		//printf("looking at (%s)\n",m_children.at(i)->m_title.c_str());
+		if (m_children.at(i)->m_title.compare(findTitle)==0)
+		{
+			return m_children.at(i);
+		}
+	}
+	return NULL;
 }
 
 // ------------------------------------
@@ -38,7 +47,7 @@ XMLNode * XMLParser::Parse(std::string path)
   
     std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
 
-	printf("\n%s\n",content.c_str());
+	//printf("\n%s\n",content.c_str());
 	
 	//read of XML version (currently ignored)
 	int pos = content.find_first_of("<");
@@ -61,46 +70,49 @@ XMLNode * XMLParser::Parse(std::string path)
 	temp = content.substr(1,content.find_first_of(">")-1);
 	XMLParser::Trim(temp);
 	base->m_title = temp;
-	printf("base title: %s\n",temp.c_str());
+	//printf("base title: %s\n",temp.c_str());
 	content.erase(0,content.find_first_of(">")+1);
 	XMLParser::Trim(content);
-	printf("entering loop\n");
+	//printf("entering loop\n");
 	while(content.size()!=0)
 	{
-		printf("base loop start with:\n%s\n",content.c_str());
-		if(!XMLParser::isStartTag(temp))
+		//printf("base loop start with:\n%s\n",content.c_str());
+		if(XMLParser::isEndTag(content)){throw new std::exception();}
+		if(!XMLParser::isStartTag(content))
 		{
-			printf("is a value\n");
-			base->m_value = content.substr(0,content.find_first_of("<"));
+			//printf("is a value\n");
+			std::string toBeValue = content.substr(0,content.find_first_of("<"));
+			XMLParser::Trim(toBeValue);
+			base->m_value =toBeValue;
 			content.erase(0,content.find_first_of("<"));
 			XMLParser::Trim(content);
-			printf("value of %s\n", base->m_value.c_str());
+			//printf("value of |%s|\n", base->m_value.c_str());
 			if(!XMLParser::isEndTag(content)) {throw new std::exception();}
-			printf("followed by end tag\n");
+			//printf("followed by end tag\n");
 			if(base->m_title.compare(content.substr(2,content.find_first_of(">")-2))!=0) {throw new std::exception();}
-			printf("end tag was base's: %s\n",content.substr(2,content.find_first_of(">")-2).c_str());
+			//printf("end tag was base's: %s\n",content.substr(2,content.find_first_of(">")-2).c_str());
 			content.erase(0,content.find_first_of(">")+1);
 			XMLParser::Trim(content);
 			return base;
 		}
 		else
 		{
-			printf("has base start tag\n");
+			//printf("has base start tag\n");
 			temp = content.substr(1,content.find_first_of(">")-1);
 			content.erase(0,content.find_first_of(">")+1);
 			XMLParser::Trim(temp);
 			XMLNode * child = new XMLNode(temp);
 			base->m_children.push_back(child);
-			printf("enter recursive on %s\n",temp.c_str());
+			//printf("enter recursive on %s\n",temp.c_str());
 			XMLParser::Trim(content);
 			XMLParser::parseRecursive(child,content);
 			//printf("end recursion\n");
 			XMLParser::Trim(content);
 			if(XMLParser::isEndTag(content))
 			{
-				//printf("had end tag\n");
-				if(base->m_title.compare(content.substr(2,content.find_first_of(">")-1))!=0) {throw new std::exception();}
-				//printf("had right end tag:%s\n",content.substr(2,content.find_first_of(">")-1).c_str());
+				//printf("had end tag:|%s|\n",content.substr(2,content.find_first_of(">")-2).c_str());
+				if(base->m_title.compare(content.substr(2,content.find_first_of(">")-2))!=0) {throw new std::exception();}
+				//printf("had right end tag:%s\n",content.substr(2,content.find_first_of(">")-2).c_str());
 				content.erase(0,content.find_first_of(">")+1);
 				XMLParser::Trim(content);
 				return base;
@@ -158,7 +170,9 @@ void XMLParser::parseRecursive(XMLNode* parent, std::string& toParse)
 	}
 	else if (toParse.find_first_of("<")!=-1){
 		//printf("rec: is a value\n");
-		parent->m_value = toParse.substr(0,toParse.find_first_of("<"));
+		std::string toBeValue = toParse.substr(0,toParse.find_first_of("<"));
+		XMLParser::Trim(toBeValue);
+		parent->m_value =toBeValue;
 		toParse.erase(0,toParse.find_first_of("<"));
 		XMLParser::Trim(toParse);
 		//printf("rec: value of %s\n", parent->m_value.c_str());
@@ -175,10 +189,14 @@ void XMLParser::parseRecursive(XMLNode* parent, std::string& toParse)
 bool XMLParser::isStartTag(std::string tagCheck)
 // ------------------------------------
 {
+	//printf("checking tag\ntag size:|%d|\nfirst char:|%s|\nsecond:|%s|\nfirst >: %d \n",
+			//tagCheck.size(),tagCheck.substr(0,1).c_str(),tagCheck.substr(1,1).c_str(),tagCheck.find_first_of(">"));
 	if (tagCheck.size()>2 && tagCheck.substr(0,1).compare(std::string("<"))==0 &&
 		tagCheck.substr(1,1).compare(std::string("/"))!=0 && tagCheck.find_first_of(">")!=-1)
 	{
-		std::string temp = tagCheck.substr(1,tagCheck.find_first_of(">"));
+		//printf("is long enough, starts with < and not </ and evenyually a >\n");
+		std::string temp = tagCheck.substr(1,tagCheck.find_first_of(">")-1);
+		//printf("using |%s|\n",temp.c_str());
 		XMLParser::Trim(temp);
 		if (temp.size()!=0)
 		{
