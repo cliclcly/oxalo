@@ -59,12 +59,50 @@ int EngineClass::Initialize(int width, int height)
 void EngineClass::CreateAnimationDictionary()
 // ------------------------------------
 {
-	//for
+	printf("derp\n");
+	for(int i=0;i<enemyTypes->m_children.size();i++)
+	{
+		std::string path = "Textures/";
+		XMLNode * temp = enemyTypes->m_children.at(i)->findChild("EnemyName");
+		if(temp==NULL) { throw new std::exception(); }
+		std::string enemyType = temp->m_value;
+		printf("enemyType: |%s|\n",enemyType.c_str());
+		path+=enemyType;
+		path+="/animation.config";
+		printf("path: %s\n",path.c_str());
+		XMLNode * conf = XMLParser::Parse(path);
+		printf("derp\n");
+		for(int c = COLOR_FIRST;c<COLOR_LAST;c++)
+		{
+			AnimationSet* temp = new AnimationSet(enemyType);
+			m_animationDictionary.insert(std::pair<  std::pair<std::string,COLOR>,AnimationSet*>
+					(std::pair<std::string,COLOR>(enemyType,(COLOR)c),temp));
+			std::string base = "Textures/";
+			base+=enemyType;
+			base += "/";
+			base += EngineClass::colorString[c];
+			base += "/";
+			for (int i=ANIM_FIRST;i<=ANIM_LAST;i++)
+			{
+				XMLNode * anim = conf->findChild(EngineClass::animString[i]);
+				if(anim==NULL){throw new std::exception();}
+				XMLNode * frameNum = anim->findChild("frameNum");
+				XMLNode * frameRate = anim->findChild("frameRate");
+				if(frameNum==NULL || frameRate==NULL){throw new std::exception();}
+				printf("loop: %d\n",i);
+				std::string path = base;
+				path+=EngineClass::animString[i];
+				path+=".png";
+				temp->BuildAnimationObject((ANIM)i,path,atoi(frameNum->m_value.c_str()),atoi(frameRate->m_value.c_str()));
+			}
+			
+		}
+	}
 
 	//will read config file eventually
 	//for now, will be hard coded
-	m_animationDictionary.insert(std::pair<  std::pair<std::string,COLOR>, 						AnimationSet*>
-					(std::pair<std::string,COLOR>(std::string("slime"),COLOR_BLUE),				new AnimationSet(std::string("slime"))));
+	/*m_animationDictionary.insert(std::pair<  std::pair<std::string,COLOR>,AnimationSet*>
+					(std::pair<std::string,COLOR>(std::string("slime"),COLOR_BLUE),new AnimationSet(std::string("slime"))));
 					
 	AnimationSet* temp = m_animationDictionary.find(std::pair<std::string,COLOR>(std::string("slime"),COLOR_BLUE))->second;
 	std::string base = "Textures/slime/";
@@ -78,6 +116,7 @@ void EngineClass::CreateAnimationDictionary()
 		path+=".png";
 		temp->BuildAnimationObject((ANIM)i,path,5,30);
 	}
+	*/
 	std::map<std::pair<std::string,COLOR>, AnimationSet*>::iterator p = m_animationDictionary.begin();
 	for(p=m_animationDictionary.begin();p!=m_animationDictionary.end();p++)
 	{
@@ -440,13 +479,13 @@ void EngineClass::setCamera(AbstractObject* o)
 void EngineClass::loadEnemies()
 // ------------------------------------
 {
-	XMLNode * master = new XMLNode("EnemyDictionary");
+	enemyTypes = new XMLNode("EnemyDictionary");
 
-	printf("loading\n");
+	//printf("loading\n");
 	WIN32_FIND_DATA tempStore;
-	printf("loading\n");
+	//printf("loading\n");
 	HANDLE search = FindFirstFile("Enemies/*.config",&tempStore);
-	printf("loading\n");
+	//printf("loading\n");
 	if (search == INVALID_HANDLE_VALUE)
 	{
 		printf("Invalid file handle.\n");
@@ -458,7 +497,9 @@ void EngineClass::loadEnemies()
 		XMLNode * temp = XMLParser::Parse(base);
 		if(verifyEnemy(temp))
 		{
-			master->m_children.push_back(temp);
+			XMLNode * toAdd = new XMLNode("Enemy");
+			toAdd->m_children.push_back(temp);
+			enemyTypes->m_children.push_back(toAdd);
 		}
 		printf ("First file name is %s.\n", base.c_str());
 		while (FindNextFile(search,&tempStore)!=false)
@@ -468,11 +509,12 @@ void EngineClass::loadEnemies()
 			temp = XMLParser::Parse(base);
 			if(verifyEnemy(temp))
 			{
-				master->m_children.push_back(temp);
+				enemyTypes->m_children.push_back(temp);
 			}
 			printf ("Next file name is %s.\n",base.c_str());
 		}
 	}
+	
 }
 
 // ------------------------------------
