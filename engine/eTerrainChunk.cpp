@@ -15,6 +15,7 @@ TerrainChunk::TerrainChunk() :
 	Box* b = new Box(Vector2(0, -100), Vector2(10, 100));
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
+	AddAttribute(new TexAttr("Textures/default.png"));
 
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_COLLISION);
@@ -30,6 +31,7 @@ TerrainChunk::TerrainChunk(float height, float x) :
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
 	AddAttribute(new SpatialAttr(x, 0));
+	AddAttribute(new TexAttr("Textures/default.png"));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_COLLISION);

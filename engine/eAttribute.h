@@ -143,7 +143,7 @@ class TexAttr : public Attribute
 {
 public:
 	TexAttr();
-	
+	TexAttr(std::string);
 	TexAttr(std::string,COLOR);
 	
 	virtual int IsAttribute(EATTR a);

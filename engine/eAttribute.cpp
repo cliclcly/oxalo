@@ -148,8 +148,24 @@ TexAttr::TexAttr() :
 // ------------------------------------
 	Attribute(EATTR_TEXTURE)
 {
-
+	m_texture = ilutGLLoadImage("Textures/default.png");
+	m_tex_coord_x1=0;
+	m_tex_coord_x2=1;
+	m_tex_coord_y1=0;
+	m_tex_coord_y2=1;
 }
+
+// ------------------------------------
+TexAttr::TexAttr(std::string path) :
+// ------------------------------------
+	Attribute(EATTR_TEXTURE)
+{
+	m_texture = ilutGLLoadImage((char*)path.c_str());
+	m_tex_coord_x1=0;
+	m_tex_coord_x2=1;
+	m_tex_coord_y1=0;
+	m_tex_coord_y2=1;
+}	
 
 // ------------------------------------
 TexAttr::TexAttr(std::string objType, COLOR color) :
@@ -166,6 +182,10 @@ TexAttr::TexAttr(std::string objType, COLOR color) :
 	}
 	path+="Still.png";
 	m_texture = ilutGLLoadImage((char*)path.c_str());
+	m_tex_coord_x1=0;
+	m_tex_coord_x2=1;
+	m_tex_coord_y1=0;
+	m_tex_coord_y2=1;
 }	
 
 // ------------------------------------
