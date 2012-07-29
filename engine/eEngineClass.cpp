@@ -282,8 +282,13 @@ int EngineClass::initialize(int width, int height)
 	m_camera = new Camera(new float(0.0), new float(0.0), new float(4.0));
 	
 	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_EQUAL,1);
+	//glClearColor(0,0,0,0);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glDisable(GL_DEPTH_TEST);
 	
 	// Timing
