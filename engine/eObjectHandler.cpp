@@ -81,6 +81,7 @@ AbstractObject* DumbObjectHandler::GetObjectFromGUID(int GUID)
 void DumbObjectHandler::FindCollisions(float diff)
 // ------------------------------------
 {
+	/*
 	std::vector<AbstractObject* >::iterator inner;
 	std::vector<AbstractObject* >::iterator outer;
 	
@@ -115,6 +116,111 @@ void DumbObjectHandler::FindCollisions(float diff)
 			//o1->HandleMsg(cm2);
 			delete cm1;
 			//delete cm2;
+		}
+	}
+	*/
+	
+	std::vector<AbstractObject* > objs = GetCollidableObjects();
+	std::vector<objpair > pairs = CollisionBroadPhase(diff);
+	CollisionNarrowPhase(diff, pairs);
+}
+
+// ------------------------------------
+std::vector<AbstractObject* > DumbObjectHandler::GetCollidableObjects()
+// ------------------------------------
+{
+	std::vector<AbstractObject* > objs;
+	std::vector<AbstractObject* >::iterator it;
+	for (it = m_objects.begin(); it != m_objects.end(); it++)
+	{
+		AbstractObject* obj = *it;
+		if (obj->RespondsTo(EMSG_COLLISION))
+			objs.push_back(obj);
+	}
+	
+	return objs;
+}
+
+// ------------------------------------
+std::vector<objpair > DumbObjectHandler::CollisionBroadPhase(float diff)
+// ------------------------------------
+{
+	std::vector<AbstractObject* > collidables = GetCollidableObjects();
+	std::vector<objpair > colliding;
+	std::vector<AbstractObject* >::iterator outer;
+	std::vector<AbstractObject* >::iterator inner;
+	for (outer = collidables.begin(); outer != collidables.end(); outer++)
+	{	
+		AbstractObject* o1 = *outer;
+		CollisionComponent* cc1 = 
+			static_cast<CollisionComponent* >(o1->GetComponent(ECOMP_COLLISION));
+		
+		//for (inner = collidables.begin(); inner != collidables.end(); inner++)
+		for (inner = outer; inner != collidables.end(); inner++)
+		{
+			if (*outer == *inner) continue;
+			
+			AbstractObject* o2 = *inner;
+			CollisionComponent* cc2 = 
+				static_cast<CollisionComponent* >(o2->GetComponent(ECOMP_COLLISION));
+			
+			Box b1 = cc1->GetAABB();
+			Box b2 = cc2->GetAABB();
+			
+			if (b1.IsColliding(b2))
+			{
+				objpair p = std::make_pair(o1, o2);
+				colliding.push_back(p);
+			}
+		}
+	}
+	
+	return colliding;
+}
+
+// ------------------------------------
+void DumbObjectHandler::CollisionNarrowPhase(float diff, std::vector<objpair > objs)
+// ------------------------------------
+{
+	std::vector<objpair >::iterator it;
+	for (it = objs.begin(); it != objs.end(); it++)
+	{
+		AbstractObject* o1 = (*it).first;
+		AbstractObject* o2 = (*it).second;
+		CollisionComponent* cc1 = 
+			static_cast<CollisionComponent* >(o1->GetComponent(ECOMP_COLLISION));
+		CollisionComponent* cc2 = 
+			static_cast<CollisionComponent* >(o2->GetComponent(ECOMP_COLLISION));
+			
+		Mesh m1 = cc1->GetMesh();
+		Mesh m2 = cc2->GetMesh();
+		//printf("m1: "); m1.Print();
+		//printf("m2: "); m2.Print();
+		
+		int colliding = m1.GJK(m2);
+		if (colliding)
+		{
+			std::pair<float, Vector2> pen = m1.EPA(m2);
+			
+			Vector2 v1 = cc1->GetVelocity();
+			Vector2 v2 = cc2->GetVelocity();
+			
+			//float j = v1.length() + v2.length();
+			float j = -1.2 * (v2 - v1).dot(pen.second);
+			/*
+			if (j != 0)
+			{
+				printf("DOH: j: %f\n", j);
+				printf("GUID o1: %d\n", o1->GUID);
+				printf("GUID o2: %d\n", o2->GUID);
+			}
+			*/
+				
+			if (j > 0) 
+			{
+				cc2->ApplyImpulse(pen.second, j);
+				cc1->ApplyImpulse(pen.second, -j);
+			}
 		}
 	}
 }

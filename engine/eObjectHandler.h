@@ -19,6 +19,8 @@
 class Message;
 class AbstractObject;
 
+typedef std::pair<AbstractObject* , AbstractObject* > objpair;
+
 class ObjectHandler
 {
 public:
@@ -29,6 +31,9 @@ public:
 	virtual AbstractObject* GetObjectFromGUID(int GUID) = 0;
 	
 	virtual void FindCollisions(float diff) = 0;
+	virtual std::vector<AbstractObject* > GetCollidableObjects() = 0;
+	virtual std::vector<objpair > CollisionBroadPhase(float diff) = 0;
+	virtual void CollisionNarrowPhase(float diff, std::vector<objpair > objs) = 0;
 };
 
 class DumbObjectHandler : public ObjectHandler, public AbstractKeyboardHandler
@@ -44,6 +49,9 @@ public:
 	virtual AbstractObject* GetObjectFromGUID(int GUID);
 	
 	virtual void FindCollisions(float diff);
+	virtual std::vector<AbstractObject* > GetCollidableObjects();
+	virtual std::vector<objpair > CollisionBroadPhase(float diff);
+	virtual void CollisionNarrowPhase(float diff, std::vector<objpair > objs);
 	
 	// KeyboardHandler
 	virtual void KeyDown(GLubyte key, int x, int y);
