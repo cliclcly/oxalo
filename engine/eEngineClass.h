@@ -16,6 +16,7 @@
 
 #include "ePolygon.h"
 #include "eAbstractObject.h"
+#include "eTextObject.h"
 #include "eObjectHandler.h"
 #include "eAbstractKeyboardHandler.h"
 #include "eCamera.h"
@@ -48,6 +49,8 @@ public: // Methods
 	// Objects
 	int GetNextGUID();
 	static int AddObject(AbstractObject* );
+	static int AddStaticTextObject(TextObject* );
+	static int AddRelativeTextObject(TextObject* );
 	static void RemoveObject(int GUID);
 	
 	
@@ -82,6 +85,8 @@ private: // Methods
 	
 	// Objects
 	int addObject(AbstractObject* );
+	int addStaticTextObject(TextObject* );
+	int addRelativeTextObject(TextObject* );
 	void removeObject(int GUID);
 	
 	// Camera
@@ -95,6 +100,8 @@ private: // Members
 	static EngineClass* m_pInstance;
 	
 	ObjectHandler* m_objectHandler;
+	RelativeTextObjectHandler* m_relativeTextObjectHandler;
+	StaticTextObjectHandler* m_staticTextObjectHandler;
 	KeyboardStack* m_keyboardStack;
 	
 	Camera* m_camera;

@@ -36,8 +36,12 @@ int DumbObjectHandler::RemoveObject(AbstractObject* object)
 	for (iter = m_objects.begin(); iter != m_objects.end(); iter++)
 	{
 		if ((*iter) == object)
+		{
 			m_objects.erase(iter);
+			return true;
+		}
 	}
+	return false;
 }
 
 // ------------------------------------
@@ -48,8 +52,12 @@ int DumbObjectHandler::RemoveObject(int GUID)
 	for (iter = m_objects.begin(); iter != m_objects.end(); iter++)
 	{
 		if ((*iter)->GUID == GUID)
+		{
 			m_objects.erase(iter);
+			return true;
+		}
 	}
+	return false;
 }
 
 // ------------------------------------
@@ -175,4 +183,206 @@ AbstractObject* DumbObjectHandler::GetNextObject(AbstractObject* object)
 		}
 	}
 	return (*m_objects.begin());
+}
+
+// ------------------------------------
+RelativeTextObjectHandler::RelativeTextObjectHandler()
+// ------------------------------------
+{
+
+}
+
+// ------------------------------------
+int RelativeTextObjectHandler::AddTextObject(TextObject* object)
+// ------------------------------------
+{
+	if (object)
+	{
+		m_textObjects.push_back(object);
+		return true;
+	}
+	return false;
+}
+
+// ------------------------------------
+int RelativeTextObjectHandler::RemoveTextObject(TextObject* object)
+// ------------------------------------
+{
+	std::vector<TextObject* >::iterator iter;
+	for (iter = m_textObjects.begin(); iter != m_textObjects.end(); iter++)
+	{
+		if ((*iter) == object)
+		{
+			m_textObjects.erase(iter);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+// ------------------------------------
+void RelativeTextObjectHandler::Render()
+// ------------------------------------
+{
+	std::vector<TextObject* >::iterator iter;
+	for (iter = m_textObjects.begin(); iter != m_textObjects.end(); iter++)
+	{
+		(*iter)->render();
+	}
+}
+
+// ------------------------------------
+TextObject * RelativeTextObjectHandler::GetNextObject(TextObject* object)
+// ------------------------------------
+{
+	std::vector<TextObject* >::iterator iter;
+	for (iter = m_textObjects.begin(); iter != m_textObjects.end(); iter++)
+	{
+		if ((*iter) == object)
+		{
+			iter++;
+			if (iter != m_textObjects.end())
+				return (*iter);
+			return (*m_textObjects.begin());
+		}
+	}
+	return (*m_textObjects.begin());
+}
+
+// ------------------------------------
+StaticTextObjectHandler::StaticTextObjectHandler()
+// ------------------------------------
+{
+
+}
+
+// ------------------------------------
+int StaticTextObjectHandler::AddTextObject(TextObject* object)
+// ------------------------------------
+{
+	if (object)
+	{
+		m_textObjects.push_back(object);
+		return true;
+	}
+	return false;
+}
+
+// ------------------------------------
+int StaticTextObjectHandler::RemoveTextObject(TextObject* object)
+// ------------------------------------
+{
+	std::vector<TextObject* >::iterator iter;
+	for (iter = m_textObjects.begin(); iter != m_textObjects.end(); iter++)
+	{
+		if ((*iter) == object)
+		{
+			m_textObjects.erase(iter);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+// ------------------------------------
+void StaticTextObjectHandler::Render()
+// ------------------------------------
+{
+	std::vector<TextObject* >::iterator iter;
+	for (iter = m_textObjects.begin(); iter != m_textObjects.end(); iter++)
+	{
+		(*iter)->render();
+	}
+}
+
+// ------------------------------------
+TextObject * StaticTextObjectHandler::GetNextObject(TextObject* object)
+// ------------------------------------
+{
+	std::vector<TextObject* >::iterator iter;
+	for (iter = m_textObjects.begin(); iter != m_textObjects.end(); iter++)
+	{
+		if ((*iter) == object)
+		{
+			iter++;
+			if (iter != m_textObjects.end())
+				return (*iter);
+			return (*m_textObjects.begin());
+		}
+	}
+	return (*m_textObjects.begin());
+}
+
+// ------------------------------------
+BackgroundObjectHandler::BackgroundObjectHandler()
+// ------------------------------------
+{
+
+}
+
+// ------------------------------------
+int BackgroundObjectHandler::AddBackgroundObject(AbstractObject* object)
+// ------------------------------------
+{
+	if (object)
+	{
+		m_backObjects.push_back(object);
+		return true;
+	}
+	return false;
+}
+
+// ------------------------------------
+int BackgroundObjectHandler::RemoveBackgroundObject(AbstractObject* object)
+// ------------------------------------
+{
+	std::vector<AbstractObject* >::iterator iter;
+	for (iter = m_backObjects.begin(); iter != m_backObjects.end(); iter++)
+	{
+		if ((*iter) == object)
+		{
+			m_backObjects.erase(iter);
+			return true;
+		}
+	}
+	return false;
+}
+
+// ------------------------------------
+void BackgroundObjectHandler::SendMessage(Message* m)
+// ------------------------------------
+{
+	std::vector<ScalingBackgroundObject*>::iterator iter1;
+	for (iter1 = m_backScaleObjects.begin(); iter1 != m_backScaleObjects.end(); iter1++)
+	{
+		(*iter1)->HandleMsg(m);
+	}
+	
+	std::vector<AbstractObject* >::iterator iter2;
+	for (iter2 = m_backObjects.begin(); iter2 != m_backObjects.end(); iter2++)
+	{
+		(*iter2)->HandleMsg(m);
+	}
+	
+	delete m;
+}
+
+// ------------------------------------
+AbstractObject* BackgroundObjectHandler::GetNextObject(AbstractObject* object)
+// ------------------------------------
+{
+	std::vector<AbstractObject* >::iterator iter;
+	for (iter = m_backObjects.begin(); iter != m_backObjects.end(); iter++)
+	{
+		if ((*iter) == object)
+		{
+			iter++;
+			if (iter != m_backObjects.end())
+				return (*iter);
+			return (*m_backObjects.begin());
+		}
+	}
+	return (*m_backObjects.begin());
 }

@@ -72,9 +72,9 @@ void EngineClass::CreateAnimationDictionary()
 		printf("path: %s\n",path.c_str());
 		XMLNode * conf = XMLParser::Parse(path);
 		printf("derp\n");
-		for(int c = COLOR_FIRST;c<COLOR_LAST;c++)
+		for(int c = COLOR_FIRST;c<=COLOR_LAST;c++)
 		{
-			AnimationSet* temp = new AnimationSet(enemyType);
+			AnimationSet* temp = new AnimationSet(enemyType,(COLOR)c);
 			m_animationDictionary.insert(std::pair<  std::pair<std::string,COLOR>,AnimationSet*>
 					(std::pair<std::string,COLOR>(enemyType,(COLOR)c),temp));
 			std::string base = "Textures/";
@@ -89,7 +89,7 @@ void EngineClass::CreateAnimationDictionary()
 				XMLNode * frameNum = anim->findChild("frameNum");
 				XMLNode * frameRate = anim->findChild("frameRate");
 				if(frameNum==NULL || frameRate==NULL){throw new std::exception();}
-				printf("loop: %d\n",i);
+				//printf("loop: %d\n",i);
 				std::string path = base;
 				path+=EngineClass::animString[i];
 				path+=".png";
@@ -116,7 +116,6 @@ void EngineClass::CreateAnimationDictionary()
 		path+=".png";
 		temp->BuildAnimationObject((ANIM)i,path,5,30);
 	}
-	*/
 	std::map<std::pair<std::string,COLOR>, AnimationSet*>::iterator p = m_animationDictionary.begin();
 	for(p=m_animationDictionary.begin();p!=m_animationDictionary.end();p++)
 	{
@@ -130,6 +129,7 @@ void EngineClass::CreateAnimationDictionary()
 			printf("values: %s %d %d\n", tempAO->m_path.c_str(),tempAO->m_frameNum, tempAO->m_frameRate);
 		}
 	}
+	*/
 }
 
 // ------------------------------------
@@ -144,7 +144,9 @@ void EngineClass::Run()
 AnimationSet * EngineClass::GetAnimationSet(std::string objType,COLOR color)
 // ------------------------------------
 {
+	printf("looking for: %s %s\n",EngineClass::colorString[color].c_str(),objType.c_str());
 	EngineClass* instance = Instance();
+	/*
 	std::map<std::pair<std::string,COLOR>, AnimationSet*>::iterator p = instance->m_animationDictionary.begin();
 	for(p=instance->m_animationDictionary.begin();p!=instance->m_animationDictionary.end();p++)
 	{
@@ -158,7 +160,7 @@ AnimationSet * EngineClass::GetAnimationSet(std::string objType,COLOR color)
 			printf("values: %s %d %d\n", tempAO->m_path.c_str(),tempAO->m_frameNum, tempAO->m_frameRate);
 		}
 	}
-	
+	*/
 	return instance->m_animationDictionary.find(std::pair<std::string,COLOR>(objType,color))->second;
 }
 
@@ -209,6 +211,22 @@ int EngineClass::AddObject(AbstractObject* object)
 	EngineClass* instance = Instance();
 	instance->addObject(object);
 	return object->GUID;
+}
+
+// ------------------------------------
+int EngineClass::AddStaticTextObject(TextObject* object)
+// ------------------------------------
+{
+	EngineClass* instance = Instance();
+	return instance->addStaticTextObject(object);
+}
+
+// ------------------------------------
+int EngineClass::AddRelativeTextObject(TextObject* object)
+// ------------------------------------
+{
+	EngineClass* instance = Instance();
+	return instance->addRelativeTextObject(object);
 }
 
 // ------------------------------------
@@ -276,6 +294,8 @@ int EngineClass::initialize(int width, int height)
 	m_keyboardStack->PushKeyboardHandler(new DumbKeyboardHandler());
 	
 	m_objectHandler = new DumbObjectHandler();
+	m_staticTextObjectHandler = new StaticTextObjectHandler();
+	m_relativeTextObjectHandler = new RelativeTextObjectHandler();
 	AbstractKeyboardHandler* kh = static_cast<AbstractKeyboardHandler* >(static_cast<DumbObjectHandler* >(m_objectHandler));
 	m_keyboardStack->PushKeyboardHandler(kh);
 	
@@ -308,7 +328,6 @@ int EngineClass::initialize(int width, int height)
 	loadEnemies();
 	// initialize animation dictionary
 	CreateAnimationDictionary();
-	
 	
 	return 0;
 }
@@ -382,8 +401,12 @@ void EngineClass::glDisplay()
 	m_objectHandler->SendMessage(rm);
 	delete rm;
 	
-	// render HUD
+	//render text
+	m_staticTextObjectHandler->Render();
+	
+	// render HUD (and relative text)
 	glHUD(m_windowW, m_windowH);
+	m_relativeTextObjectHandler->Render();
 	rm = new RenderMessage(EMSG_RENDER_HUD);
 	m_objectHandler->SendMessage(rm);
 	delete rm;
@@ -454,6 +477,20 @@ int EngineClass::addObject(AbstractObject* object)
 {
 	m_objectHandler->AddObject(object);
 	return object->GUID;
+}
+
+// ------------------------------------
+int EngineClass::addRelativeTextObject(TextObject* object)
+// ------------------------------------
+{
+	return m_relativeTextObjectHandler->AddTextObject(object);
+}
+
+// ------------------------------------
+int EngineClass::addStaticTextObject(TextObject* object)
+// ------------------------------------
+{
+	return m_staticTextObjectHandler->AddTextObject(object);
 }
 
 // ------------------------------------

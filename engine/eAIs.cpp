@@ -5,6 +5,7 @@
 // ****************************************************************************
 
 #include "eAIs.h"
+#include "eAbstractObject.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -32,6 +33,10 @@ void SlimeAIComponent::HandleMsg(Message* m)
 		{
 			ThinkMessage* tm = static_cast<ThinkMessage* >(m);
 			
+			if(!m_state->jumped  && !m_state->jumping && !m_state->falling )
+			{
+				printf("landed\n");
+			}
 			if(!m_state->jumped)
 			{
 				if(waitTime+tm->m_diff>1)
@@ -50,7 +55,9 @@ void SlimeAIComponent::HandleMsg(Message* m)
 					m_state->jumped = true;
 					m_state->jumping = true;
 					m_state->falling = false;
+					parent->HandleMsg(new ChangeAnimMessage(ANIM_JUMP,0));
 				}else{
+					parent->HandleMsg(new ChangeAnimMessage(ANIM_STILL,0));					
 					m_physic->vel.x = 0;
 					waitTime+=tm->m_diff;
 				}

@@ -20,6 +20,7 @@ GenericEnemy:: GenericEnemy()
 	AddAttribute(new ColorAttr(COLOR_BLUE));
 	AddAttribute(new TexAttr(std::string("slime"),COLOR_BLUE));
 	AddAttribute(new StateAttr());
+	AddAttribute(new TypeAttr(std::string("slime")));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);
@@ -42,6 +43,7 @@ GenericEnemy::GenericEnemy(float x, float y)
 	AddAttribute(new ColorAttr(COLOR_BLUE));
 	AddAttribute(new TexAttr(std::string("slime"),COLOR_BLUE));
 	AddAttribute(new StateAttr());
+	AddAttribute(new TypeAttr(std::string("slime")));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);

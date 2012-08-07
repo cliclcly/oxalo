@@ -171,11 +171,9 @@ public:
 	GeomAttr* m_geom;
 	TexAttr* m_tex;
 	TypeAttr* m_type;
+	ColorAttr* m_color;
 	
 	bool m_animInfoSet;
-	
-	char* Object;
-	COLOR color;
 	
 };
 #endif

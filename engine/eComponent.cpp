@@ -124,6 +124,8 @@ void Component::SetAttribute(Attribute* ar)
 			anc->m_tex = static_cast<TexAttr* >(ar);
 		if (ar->type == EATTR_TYPE)
 			anc->m_type = static_cast<TypeAttr* >(ar);
+		if (ar->type == EATTR_COLOR)
+			anc->m_color = static_cast<ColorAttr* >(ar);
 	}
 	if (type == ECOMP_AI)
 	{
@@ -585,53 +587,74 @@ void AnimateComponent::HandleMsg(Message* m)
 	{
 		case(EMSG_THINK):
 		{
-			ThinkMessage* tm = static_cast<ThinkMessage* >(m);
-			m_accum_wait+=tm->m_diff;
-			if(m_accum_wait>1.0/m_framerate)
+			if(m_animInfoSet)
 			{
-				m_accum_wait-=1.0/m_framerate;
-				if (m_currentFrame==m_numFrames-1)
+				//printf("anim Think while set\n");
+				ThinkMessage* tm = static_cast<ThinkMessage* >(m);
+				m_accum_wait+=tm->m_diff;
+				if(m_accum_wait>1.0/m_framerate)
 				{
-					m_currentFrame=0;
-				}else{
-					m_currentFrame++;
+					m_accum_wait-=1.0/m_framerate;
+					if (m_currentFrame==m_numFrames-1)
+					{
+						m_currentFrame=0;
+					}else{
+						m_currentFrame++;
+					}
+					m_tex->m_tex_coord_x1=((float)m_currentFrame)/((float)( m_numFrames));
+					m_tex->m_tex_coord_x2=((float)m_currentFrame+1.0)/((float)(m_numFrames));
+					m_tex->m_tex_coord_y1=0;
+					m_tex->m_tex_coord_y2=1;
 				}
-				m_tex->m_tex_coord_x1=((float)m_currentFrame)/((float)( m_numFrames));
-				m_tex->m_tex_coord_x2=((float)m_currentFrame+1.0)/((float)(m_numFrames));
-				m_tex->m_tex_coord_y1=0;
-				m_tex->m_tex_coord_y2=1;
 			}
 			break;
 		}
 		case(EMSG_CHANGEANIM):
 		{
+			//printf("anim change request\n");
+			bool change=false;
+			ChangeAnimMessage* cam = static_cast<ChangeAnimMessage* >(m);
+			//printf("anim check 1\n");
 			if(!m_animInfoSet)
 			{
+				//printf("anim check 2\n");
+				change=true;
+				//printf("anim check 3\n");
 				m_animInfoSet=true;
-				m_animation = EngineClass::GetAnimationSet(m_type->m_type,COLOR_BLUE);
-				m_currentAnimation = ANIM_STILL;
+				//printf("anim check 4\n");
+				//printf("type: %s\n",m_type->m_type.c_str());
+				m_animation = EngineClass::GetAnimationSet(m_type->m_type,m_color->m_color);
+				//printf("anim check 5\n");
 			}
-			ChangeAnimMessage* cam = static_cast<ChangeAnimMessage* >(m);
-			m_currentAnimation = cam->changeAnim;
-			AnimationObject * anim =  m_animation->GetAnimationObject(m_currentAnimation);
-			if (m_tex==NULL)
+			else if (m_currentAnimation!=cam->changeAnim)
 			{
-				printf("m_tex null");
+				//printf("anim check 6\n");
+				change=true;
 			}
-			m_tex->SetTexture(anim->getGUID());
-			printf("got anim\n");
-			m_currentFrame = cam->startFrame;
-			m_numFrames = anim->m_frameNum;
-			m_framerate = anim->m_frameRate;
-			m_accum_wait=0;
-			printf("stuff set\n");
-			
-			m_tex->m_tex_coord_x1 = ((float)m_currentFrame)/((float)( m_numFrames));
-			m_tex->m_tex_coord_x2 = ((float)m_currentFrame+1.0)/((float)(m_numFrames));
-			m_tex->m_tex_coord_y1 = 0;
-			m_tex->m_tex_coord_y2 = 1;
-			printf("coord set\n");
-			
+			if (change)
+			{
+				//printf("anim check 7\n");
+				m_currentAnimation = cam->changeAnim;
+				
+				AnimationObject * anim =  m_animation->GetAnimationObject(m_currentAnimation);
+				if (m_tex==NULL)
+				{
+				//printf("m_tex null");
+				}
+				m_tex->SetTexture(anim->getGUID());
+				//printf("got anim\n");
+				m_currentFrame = cam->startFrame;
+				m_numFrames = anim->m_frameNum;
+				m_framerate = anim->m_frameRate;
+				m_accum_wait=0;
+				//printf("stuff set\n");
+				
+				m_tex->m_tex_coord_x1 = ((float)m_currentFrame)/((float)( m_numFrames));
+				m_tex->m_tex_coord_x2 = ((float)m_currentFrame+1.0)/((float)(m_numFrames));
+				m_tex->m_tex_coord_y1 = 0;
+				m_tex->m_tex_coord_y2 = 1;
+				//printf("coord set\n");
+			}
 		}
 			break;
 		default:

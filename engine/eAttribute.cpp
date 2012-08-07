@@ -148,7 +148,7 @@ TexAttr::TexAttr() :
 // ------------------------------------
 	Attribute(EATTR_TEXTURE)
 {
-	m_texture = ilutGLLoadImage("Textures/default.png");
+	m_texture = ilutGLLoadImage((char*)"Textures/default.png");
 	m_tex_coord_x1=0;
 	m_tex_coord_x2=1;
 	m_tex_coord_y1=0;
@@ -180,7 +180,7 @@ TexAttr::TexAttr(std::string objType, COLOR color) :
 		path+= EngineClass::colorString[color];
 		path+="/";
 	}
-	path+="Still.png";
+	path+="default.png";
 	m_texture = ilutGLLoadImage((char*)path.c_str());
 	m_tex_coord_x1=0;
 	m_tex_coord_x2=1;
@@ -192,10 +192,10 @@ TexAttr::TexAttr(std::string objType, COLOR color) :
 void TexAttr::SetTexture(GLuint newTexture)
 // ------------------------------------
 {
-	printf("current Texture: %u\n", m_texture);
-	printf("setting texture %u\n",newTexture);
-	m_texture = 1;
-	printf("dooone!\n");
+	//printf("current Texture: %u\n", m_texture);
+	//printf("setting texture %u\n",newTexture);
+	m_texture = newTexture;
+	//printf("dooone!\n");
 }
 
 // ------------------------------------
@@ -335,7 +335,7 @@ TypeAttr::TypeAttr(std::string type):
 int TypeAttr::IsAttribute(EATTR a)
 // ------------------------------------
 {
-	if (a == EATTR_DROP) return true;
+	if (a == EATTR_TYPE) return true;
 	return false;
 }
 
