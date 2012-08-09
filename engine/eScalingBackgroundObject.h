@@ -18,6 +18,7 @@ public:
 	int RespondsTo(EMSG );
 	
 	
+	
 };
 
 #endif
