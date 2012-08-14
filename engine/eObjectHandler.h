@@ -14,6 +14,8 @@
 //#include "eMessage.h"
 //#include "eAbstractObject.h"
 #include "eAbstractKeyboardHandler.h"
+#include "eScalingBackgroundObject.h"
+#include "eTextObject.h"
 #include <vector>
 
 class Message;
@@ -22,6 +24,7 @@ class AbstractObject;
 typedef std::pair<AbstractObject* , AbstractObject* > objpair;
 
 class ObjectHandler
+// ------------------------------------
 {
 public:
 	virtual int AddObject(AbstractObject* object) = 0;
@@ -36,7 +39,9 @@ public:
 	virtual void CollisionNarrowPhase(float diff, std::vector<objpair > objs) = 0;
 };
 
+// ------------------------------------
 class DumbObjectHandler : public ObjectHandler, public AbstractKeyboardHandler
+// ------------------------------------
 {
 public:
 	DumbObjectHandler();
@@ -62,6 +67,66 @@ public:
 private:
 	std::vector<AbstractObject* > m_objects;
 	AbstractObject* m_current;
+};
+
+// ------------------------------------
+class TextObjectHandler
+// ------------------------------------
+{
+public:
+	virtual int AddTextObject(TextObject* object)=0;
+	virtual int RemoveTextObject(TextObject* object)=0;
+	virtual void Render()=0;
+};
+
+
+class RelativeTextObjectHandler : public TextObjectHandler
+{
+public:
+	RelativeTextObjectHandler();
+	virtual int AddTextObject(TextObject* object);
+	virtual int RemoveTextObject(TextObject* object);
+	virtual void Render();
+	TextObject* GetNextObject(TextObject* object);
+	
+private:
+	std::vector<TextObject* > m_textObjects;
+	TextObject* m_current;
+};
+
+// ------------------------------------
+class StaticTextObjectHandler : public TextObjectHandler
+// ------------------------------------
+{
+public:
+	StaticTextObjectHandler();
+	virtual int AddTextObject(TextObject* object);
+	virtual int RemoveTextObject(TextObject* object);
+	virtual void Render();
+	
+	TextObject* GetNextObject(TextObject* object);
+	
+private:
+	std::vector<TextObject* > m_textObjects;
+	TextObject* m_current;
+};
+
+// ------------------------------------
+class BackgroundObjectHandler : public ObjectHandler
+// ------------------------------------
+{
+public:
+	BackgroundObjectHandler();
+	virtual int AddBackgroundObject(AbstractObject* object);
+	virtual int RemoveBackgroundObject(AbstractObject* object);
+	virtual void SendMessage(Message* m);
+	
+	AbstractObject* GetNextObject(AbstractObject* object);
+	
+private:
+	std::vector<ScalingBackgroundObject* > m_backScaleObjects;
+	std::vector<AbstractObject* > m_backObjects;
+	TextObject* m_current;
 };
 
 #endif

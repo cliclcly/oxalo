@@ -9,6 +9,7 @@
 
 #include "enums.h"
 
+#include <windows.h>
 #include <GL/gl.h>
 #include <map>
 #include <string>
@@ -32,7 +33,7 @@ private:
 class AnimationSet
 {
 public: 
-	AnimationSet(std::string);
+	AnimationSet(std::string,COLOR);
 	void BuildAnimationObject(ANIM,std::string,int,int);
 	AnimationObject * GetAnimationObject(ANIM);
 	

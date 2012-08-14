@@ -103,8 +103,6 @@ public:
 	GeomAttr* m_geom;
 	
 	CollisionInfo* m_info;
-	
-	
 };
 
 // ------------------------------------
@@ -180,11 +178,16 @@ public:
 	GeomAttr* m_geom;
 	TexAttr* m_tex;
 	TypeAttr* m_type;
+	ColorAttr* m_color;
 	
 	bool m_animInfoSet;
 	
-	char* Object;
-	COLOR color;
+};
+
+// ------------------------------------
+class ScaleRenderComponent : public Component
+// ------------------------------------
+{
 	
 };
 #endif
