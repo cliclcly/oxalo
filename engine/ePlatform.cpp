@@ -16,6 +16,7 @@ Platform::Platform() :
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
 	AddAttribute(new SpatialAttr(0, 0));
+	AddAttribute(new TexAttr("Textures/default.png"));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_COLLISION);
@@ -31,6 +32,7 @@ Platform::Platform(Vector2 base, Vector2 dim) :
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
 	AddAttribute(new SpatialAttr(base.x, base.y));
+	AddAttribute(new TexAttr("Textures/default.png"));
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_COLLISION);

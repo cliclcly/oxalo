@@ -7,43 +7,15 @@
 #ifndef __EATTRIBUTE_H__
 #define __EATTRIBUTE_H__
 
+#include "enums.h"
+
 #include "ePolygon.h"
 #include <vector>
+#include <string>
 
 #include <GL/gl.h>
 
 class Box;
-
-enum EATTR 
-{
-	EATTR_DEFAULT,
-	EATTR_SPATIAL,
-	EATTR_PHYSIC,
-	EATTR_GEOM,
-	EATTR_TEXTURE,
-	EATTR_STATE,
-	EATTR_HP,
-	EATTR_COLOR,
-	EATTR_DROPS
-};
-
-enum GEOM
-{
-	GEOM_SQUARE,
-	GEOM_TRIANGLE
-};	
-
-enum COLOR
-{
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_BLUE,
-	COLOR_ORANGE,
-	COLOR_PURPLE,
-	COLOR_YELLOW,
-	COLOR_WHITE,
-	COLOR_BLACK,
-};	
 
 // ------------------------------------
 class Attribute
@@ -105,22 +77,7 @@ public:
 	Mesh m_mesh;
 };
 
-// ------------------------------------
-class TexAttr : public Attribute
-// ------------------------------------
-{
-public:
-	TexAttr();
-	TexAttr(char*);
-	
-	virtual int IsAttribute(EATTR a);
-	GLuint GetTexture();
-	
-	char* m_texture_path;
-	
-private:
-	GLuint m_texture;
-};
+
 
 // ------------------------------------
 class StateAttr : public Attribute
@@ -167,17 +124,52 @@ public:
 };
 
 // ------------------------------------
-class DropsAttr : public Attribute
+class DropAttr : public Attribute
 // ------------------------------------
 {
 public:
-	DropsAttr();
-	DropsAttr(std::vector<int>,std::vector<float>);
+	DropAttr();
+	DropAttr(std::vector<int>,std::vector<float>);
 	
 	virtual int IsAttribute(EATTR a);
 	
-	std::vector<int> ItemDrops;
-	std::vector<float> ItemChances;
+	std::vector<int> ItemDrop;
+	std::vector<float> ItemChance;
+	
+};
+
+// ------------------------------------
+class TexAttr : public Attribute
+// ------------------------------------
+{
+public:
+	TexAttr();
+	TexAttr(std::string);
+	TexAttr(std::string,COLOR);
+	
+	virtual int IsAttribute(EATTR a);
+	GLuint GetTexture();
+	void SetTexture(GLuint);
+	
+	float m_tex_coord_x1, m_tex_coord_x2;
+	float m_tex_coord_y1, m_tex_coord_y2;
+	GLuint m_texture;
+	
+	
+private:
+};
+
+// ------------------------------------
+class TypeAttr : public Attribute
+// ------------------------------------
+{
+public:
+	TypeAttr();
+	TypeAttr(std::string);
+	
+	virtual int IsAttribute(EATTR a);
+	
+	std::string m_type;
 	
 };
 #endif

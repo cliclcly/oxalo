@@ -70,10 +70,29 @@ DamageMessage::DamageMessage(int damage) :
 {
 	
 }
+
 // ------------------------------------
 DropMessage::DropMessage() :
 // ------------------------------------
 	Message(EMSG_DROP)
 {
 	
+}
+
+// ------------------------------------
+DieMessage::DieMessage() :
+// ------------------------------------
+	Message(EMSG_DIE)
+{
+	
+}
+
+// ------------------------------------
+ChangeAnimMessage::ChangeAnimMessage(ANIM toChange, int startframe) :
+// ------------------------------------
+	Message(EMSG_CHANGEANIM),
+	changeAnim(toChange),
+	startFrame(startframe)
+{
+
 }

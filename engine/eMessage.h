@@ -7,26 +7,12 @@
 #ifndef __EMESSAGE_H__
 #define __EMESSAGE_H__
 
+#include "enums.h"
+
 #include <GL/gl.h>
 
 class CollisionInfo;
 
-enum EMSG
-{
-	EMSG_DEFAULT,
-	EMSG_RENDER,
-	EMSG_RENDER_FOREGROUND,
-	EMSG_RENDER_BACKGROUND,
-	EMSG_RENDER_HUD,
-	EMSG_THINK,
-	EMSG_SPATIAL,
-	EMSG_PHYSIC,
-	EMSG_COLLISION,
-	EMSG_KEYBOARD,
-	EMSG_STATE,
-	EMSG_DROP,
-	EMSG_DAMAGE
-};
 
 class Message
 {
@@ -86,4 +72,21 @@ public:
 	DropMessage();
 	
 };
+
+class DieMessage : public Message
+{
+public:
+	DieMessage();
+	
+};
+
+class ChangeAnimMessage : public Message
+{
+public:
+	ChangeAnimMessage(ANIM,int);
+	
+	ANIM changeAnim;
+	int startFrame;
+};
+
 #endif

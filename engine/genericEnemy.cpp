@@ -16,17 +16,18 @@ GenericEnemy:: GenericEnemy()
 	AddAttribute(new PhysicAttr());
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	AddAttribute(new HPAttr(100));
-	AddAttribute(new DropsAttr());
+	AddAttribute(new DropAttr());
 	AddAttribute(new ColorAttr(COLOR_BLUE));
-	AddAttribute(new TexAttr((char*)"BluBlob.png"));
+	AddAttribute(new TexAttr(std::string("slime"),COLOR_BLUE));
 	AddAttribute(new StateAttr());
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);
 	AddComponent(ECOMP_COLLISION);
 	AddComponent(ECOMP_DAMAGEABLE);
-	AddComponent(ECOMP_DROPS);
+	AddComponent(ECOMP_DROP);
 	AddComponent(ECOMP_SLIME_AI);
+	AddComponent(ECOMP_ANIM);
 }
 
 // ------------------------------------
@@ -37,17 +38,18 @@ GenericEnemy::GenericEnemy(float x, float y)
 	AddAttribute(new PhysicAttr());
 	AddAttribute(new GeomAttr(GEOM_SQUARE));
 	AddAttribute(new HPAttr(100));
-	AddAttribute(new DropsAttr());
+	AddAttribute(new DropAttr());
 	AddAttribute(new ColorAttr(COLOR_BLUE));
-	AddAttribute(new TexAttr((char*)"BluBlob.png"));
+	AddAttribute(new TexAttr(std::string("slime"),COLOR_BLUE));
 	AddAttribute(new StateAttr());
 	
 	AddComponent(ECOMP_RENDER);
 	AddComponent(ECOMP_PHYSIC);
 	AddComponent(ECOMP_COLLISION);
 	AddComponent(ECOMP_DAMAGEABLE);
-	AddComponent(ECOMP_DROPS);
+	AddComponent(ECOMP_DROP);
 	AddComponent(ECOMP_SLIME_AI);
+	AddComponent(ECOMP_ANIM);
 }
 
 // ------------------------------------
@@ -59,7 +61,27 @@ int GenericEnemy::RespondsTo(EMSG m)
 		m == EMSG_PHYSIC ||
 		m == EMSG_SPATIAL ||
 		m == EMSG_COLLISION ||
-		m == EMSG_STATE)
+		m == EMSG_STATE ||
+		m == EMSG_DROP ||
+		m == EMSG_DIE ||
+		m == EMSG_KEYBOARD ||
+		m == EMSG_DAMAGE
+		)
 		return true;
 	return false;
+}
+
+// ------------------------------------
+void GenericEnemy::HandleMsg(Message* m)
+// ------------------------------------
+{
+	if (m->type == EMSG_KEYBOARD)
+	{
+		KeyboardMessage* km = static_cast<KeyboardMessage* >(m);
+		if (km->key == 'p')
+		{
+			this->HandleMsg(new DamageMessage(100));
+		}
+	}
+	AbstractObject::HandleMsg(m);
 }

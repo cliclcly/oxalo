@@ -9,6 +9,8 @@
 #include "eDebug.h"
 #include "eAIs.h"
 
+#include "eEngineClass.h"
+
 #include <windows.h>
 #include <GL/glut.h>
 #include <IL/ilut.h>
@@ -45,12 +47,14 @@ Component* Component::GetNewComponent(ECOMP c)
 		return new CollisionComponent();
 	if (c == ECOMP_DAMAGEABLE)
 		return new DamageableComponent();
-	if (c == ECOMP_DROPS)
-		return new DropsComponent();
+	if (c == ECOMP_DROP)
+		return new DropComponent();
 	if (c == ECOMP_AI)
 		return new AIComponent();
 	if (c == ECOMP_HUD_HP)
 		return new HP_HUDComponent();
+	if (c == ECOMP_ANIM)
+		return new AnimateComponent();
 	if (c == ECOMP_SLIME_AI)
 		return new SlimeAIComponent();
 	//---------  MODEL FOR AI ---------
@@ -96,11 +100,11 @@ void Component::SetAttribute(Attribute* ar)
 		if (ar->type == EATTR_HP)
 			dac->m_hp = static_cast<HPAttr* >(ar);
 	}
-	if (type == ECOMP_DROPS)
+	if (type == ECOMP_DROP)
 	{
-		DropsComponent* dec = static_cast<DropsComponent* >(this);
-		if (ar->type == EATTR_DROPS)
-			dec->m_drops = static_cast<DropsAttr* >(ar);
+		DropComponent* dec = static_cast<DropComponent* >(this);
+		if (ar->type == EATTR_DROP)
+			dec->m_drop = static_cast<DropAttr* >(ar);
 	}
 	if (type == ECOMP_HUD_HP)
 	{
@@ -108,6 +112,18 @@ void Component::SetAttribute(Attribute* ar)
 			static_cast<HP_HUDComponent* >(this);
 		if (ar->type == EATTR_HP)
 			hp->m_hp = static_cast<HPAttr* >(ar);
+	}
+	if (type == ECOMP_ANIM)
+	{
+		AnimateComponent* anc = static_cast<AnimateComponent* >(this);
+		if (ar->type == EATTR_SPATIAL)
+			anc->m_spatial = static_cast<SpatialAttr* >(ar);
+		if (ar->type == EATTR_GEOM)
+			anc->m_geom = static_cast<GeomAttr* >(ar);
+		if (ar->type == EATTR_TEXTURE)
+			anc->m_tex = static_cast<TexAttr* >(ar);
+		if (ar->type == EATTR_TYPE)
+			anc->m_type = static_cast<TypeAttr* >(ar);
 	}
 	if (type == ECOMP_AI)
 	{
@@ -163,13 +179,13 @@ void RenderComponent::HandleMsg(Message* m)
 				Box b = m_geom->m_bound;
 				
 				glBegin(GL_QUADS);
-					glTexCoord2f(0, 0);
+					glTexCoord2f(m_tex->m_tex_coord_x1, m_tex->m_tex_coord_y1);
 					glVertex2f(b.base.x, b.base.y);
-					glTexCoord2f(0, 1);
+					glTexCoord2f(m_tex->m_tex_coord_x1, m_tex->m_tex_coord_y2);
 					glVertex2f(b.base.x, b.base.y + b.dim.y);
-					glTexCoord2f(1, 1);
+					glTexCoord2f(m_tex->m_tex_coord_x2, m_tex->m_tex_coord_y2);
 					glVertex2f(b.base.x + b.dim.x, b.base.y + b.dim.y);
-					glTexCoord2f(1, 0);
+					glTexCoord2f(m_tex->m_tex_coord_x2, m_tex->m_tex_coord_y1);
 					glVertex2f(b.base.x + b.dim.x, b.base.y);
 				glEnd();
 				
@@ -218,6 +234,7 @@ void PhysicComponent::HandleMsg(Message* m)
 		
 		m_physic->lastpos = m_spatial->pos;
 		
+		/*
 		if (parent->RespondsTo(EMSG_STATE))
 		{
 			StateAttr* state = 
@@ -237,6 +254,7 @@ void PhysicComponent::HandleMsg(Message* m)
 				state->falling = true;
 			}
 		}
+		*/
 		
 		m_spatial->pos += m_physic->vel.scale(tm->m_diff);
 		m_physic->vel = m_physic->vel + Vector2(0, -10 * tm->m_diff);
@@ -523,7 +541,7 @@ void DamageableComponent::HandleMsg(Message* m)
 		if (hpa->currentHP-cm->damage<=0)
 		{
 			hpa->currentHP=0;
-			//kill
+			this->parent->HandleMsg(new DieMessage());
 		}
 		hpa->currentHP-=cm->damage;
 	break;
@@ -531,21 +549,27 @@ void DamageableComponent::HandleMsg(Message* m)
 }
 
 // ------------------------------------
-DropsComponent::DropsComponent() :
+DropComponent::DropComponent() :
 // ------------------------------------
-	Component(ECOMP_DROPS)
+	Component(ECOMP_DROP)
 {
-	reqs.push_back(EATTR_DROPS);
+	reqs.push_back(EATTR_DROP);
 }
 
 // ------------------------------------
-void DropsComponent::HandleMsg(Message* m)
+void DropComponent::HandleMsg(Message* m)
 // ------------------------------------
 {
 	switch(m->type)
 	{
-	case EMSG_DROP:
-	break;
+		case EMSG_DROP:
+		break;
+		case EMSG_DIE:
+		{
+			DropAttr* da = static_cast<DropAttr* >(parent->GetAttribute(EATTR_DROP));
+			//TODO drop code
+			EngineClass::RemoveObject(this->parent->GUID);
+		}
 	}
 }
 
@@ -554,6 +578,7 @@ AIComponent::AIComponent() :
 // ------------------------------------
 	Component(ECOMP_AI)
 {
+
 }
 
 // ------------------------------------
@@ -587,4 +612,89 @@ void HP_HUDComponent::HandleMsg(Message* m)
 		glEnd();
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 	}
+}
+
+// ------------------------------------
+AnimateComponent::AnimateComponent() :
+// ------------------------------------
+	Component(ECOMP_ANIM),
+	m_currentFrame(0),
+	m_numFrames(1),
+	m_framerate(1),
+	m_accum_wait(0),
+	m_animInfoSet(false)
+{
+	reqs.push_back(EATTR_TEXTURE);
+	reqs.push_back(EATTR_TYPE);
+	reqs.push_back(EATTR_COLOR);
+	
+}
+
+// ------------------------------------
+void AnimateComponent::HandleMsg(Message* m)
+// ------------------------------------
+{
+	switch(m->type)
+	{
+		case(EMSG_THINK):
+		{
+			ThinkMessage* tm = static_cast<ThinkMessage* >(m);
+			m_accum_wait+=tm->m_diff;
+			if(m_accum_wait>1.0/m_framerate)
+			{
+				m_accum_wait-=1.0/m_framerate;
+				if (m_currentFrame==m_numFrames-1)
+				{
+					m_currentFrame=0;
+				}else{
+					m_currentFrame++;
+				}
+				m_tex->m_tex_coord_x1=((float)m_currentFrame)/((float)( m_numFrames));
+				m_tex->m_tex_coord_x2=((float)m_currentFrame+1.0)/((float)(m_numFrames));
+				m_tex->m_tex_coord_y1=0;
+				m_tex->m_tex_coord_y2=1;
+			}
+			break;
+		}
+		case(EMSG_CHANGEANIM):
+		{
+			if(!m_animInfoSet)
+			{
+				m_animInfoSet=true;
+				m_animation = EngineClass::GetAnimationSet(m_type->m_type,COLOR_BLUE);
+				m_currentAnimation = ANIM_STILL;
+			}
+			ChangeAnimMessage* cam = static_cast<ChangeAnimMessage* >(m);
+			m_currentAnimation = cam->changeAnim;
+			AnimationObject * anim =  m_animation->GetAnimationObject(m_currentAnimation);
+			if (m_tex==NULL)
+			{
+				printf("m_tex null");
+			}
+			m_tex->SetTexture(anim->getGUID());
+			printf("got anim\n");
+			m_currentFrame = cam->startFrame;
+			m_numFrames = anim->m_frameNum;
+			m_framerate = anim->m_frameRate;
+			m_accum_wait=0;
+			printf("stuff set\n");
+			
+			m_tex->m_tex_coord_x1 = ((float)m_currentFrame)/((float)( m_numFrames));
+			m_tex->m_tex_coord_x2 = ((float)m_currentFrame+1.0)/((float)(m_numFrames));
+			m_tex->m_tex_coord_y1 = 0;
+			m_tex->m_tex_coord_y2 = 1;
+			printf("coord set\n");
+			
+		}
+			break;
+		default:
+			break;
+	}
+}
+
+// ------------------------------------
+GLuint AnimateComponent::ChangeAnimation(ANIM a)
+// ------------------------------------
+{
+	
 }
