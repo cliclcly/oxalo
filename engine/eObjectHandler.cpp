@@ -354,12 +354,6 @@ int BackgroundObjectHandler::RemoveBackgroundObject(AbstractObject* object)
 void BackgroundObjectHandler::SendMessage(Message* m)
 // ------------------------------------
 {
-	std::vector<ScalingBackgroundObject*>::iterator iter1;
-	for (iter1 = m_backScaleObjects.begin(); iter1 != m_backScaleObjects.end(); iter1++)
-	{
-		(*iter1)->HandleMsg(m);
-	}
-	
 	std::vector<AbstractObject* >::iterator iter2;
 	for (iter2 = m_backObjects.begin(); iter2 != m_backObjects.end(); iter2++)
 	{

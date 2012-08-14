@@ -14,7 +14,6 @@
 //#include "eMessage.h"
 //#include "eAbstractObject.h"
 #include "eAbstractKeyboardHandler.h"
-#include "eScalingBackgroundObject.h"
 #include <vector>
 
 class Message;
@@ -116,7 +115,6 @@ public:
 	AbstractObject* GetNextObject(AbstractObject* object);
 	
 private:
-	std::vector<ScalingBackgroundObject* > m_backScaleObjects;
 	std::vector<AbstractObject* > m_backObjects;
 	TextObject* m_current;
 };

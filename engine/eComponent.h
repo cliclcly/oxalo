@@ -176,11 +176,4 @@ public:
 	bool m_animInfoSet;
 	
 };
-
-// ------------------------------------
-class ScaleRenderComponent : public Component
-// ------------------------------------
-{
-	
-};
 #endif
