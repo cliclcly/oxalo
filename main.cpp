@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	TerrainChunk* t1 = new TerrainChunk(7, 0);
 	TerrainChunk* t2 = new TerrainChunk(5.5, 10); 
 	Platform* p1 = new Platform( Vector2(0, 9), Vector2(2, 0.5));
-	//GenericEnemy* e1 = new GenericEnemy(7,12);
+	GenericEnemy* e1 = new GenericEnemy(7,12);
 	//PSquare* s4 = new PSquare(10, 12);
 	EngineClass::AddObject(s1);
 	EngineClass::AddObject(s2);
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	EngineClass::AddObject(t2);
 	EngineClass::AddObject(p1);
 	
-	//EngineClass::AddObject(e1);
+	EngineClass::AddObject(e1);
 	
 	Player* p = new Player();
 	EngineClass::AddObject(p);
