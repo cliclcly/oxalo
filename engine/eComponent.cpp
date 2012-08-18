@@ -178,17 +178,17 @@ void RenderComponent::HandleMsg(Message* m)
 				glTranslatef(m_spatial->pos.x, m_spatial->pos.y, 0);
 				//glColor4f(1.0, 0.0, 0.0, 1.0);
 				
-				Box* b = m_geom->m_bound;
+				Box b = m_geom->m_bound;
 				
 				glBegin(GL_QUADS);
 					glTexCoord2f(m_tex->m_tex_coord_x1, m_tex->m_tex_coord_y1);
-					glVertex2f(b->base.x, b->base.y);
+					glVertex2f(b.base.x, b.base.y);
 					glTexCoord2f(m_tex->m_tex_coord_x1, m_tex->m_tex_coord_y2);
-					glVertex2f(b->base.x, b->base.y + b->dim.y);
+					glVertex2f(b.base.x, b.base.y + b.dim.y);
 					glTexCoord2f(m_tex->m_tex_coord_x2, m_tex->m_tex_coord_y2);
-					glVertex2f(b->base.x + b->dim.x, b->base.y + b->dim.y);
+					glVertex2f(b.base.x + b.dim.x, b.base.y + b.dim.y);
 					glTexCoord2f(m_tex->m_tex_coord_x2, m_tex->m_tex_coord_y1);
-					glVertex2f(b->base.x + b->dim.x, b->base.y);
+					glVertex2f(b.base.x + b.dim.x, b.base.y);
 				glEnd();
 				
 				glPopMatrix();
@@ -236,6 +236,7 @@ void PhysicComponent::HandleMsg(Message* m)
 		
 		m_physic->lastpos = m_spatial->pos;
 		
+		/*
 		if (parent->RespondsTo(EMSG_STATE))
 		{
 			StateAttr* state = 
@@ -255,9 +256,13 @@ void PhysicComponent::HandleMsg(Message* m)
 				state->falling = true;
 			}
 		}
+		*/
 		
 		m_spatial->pos += m_physic->vel.scale(tm->m_diff);
 		m_physic->vel = m_physic->vel + Vector2(0, -10 * tm->m_diff);
+		
+		if  (m_physic->vel.y > 15)
+			m_physic->vel.y = 15;
 		
 		if (parent->RespondsTo(EMSG_STATE))
 		{
@@ -271,12 +276,18 @@ void PhysicComponent::HandleMsg(Message* m)
 }
 
 // ------------------------------------
+Vector2 PhysicComponent::GetVelocity()
+// ------------------------------------
+{
+	return m_physic->vel;
+}
+
+// ------------------------------------
 CollisionInfo::CollisionInfo() :
 // ------------------------------------
 	other(0),
 	pos(Vector2(0, 0)),
-	vel(Vector2(0, 0)),
-	bound(0)
+	vel(Vector2(0, 0))
 {
 	
 }
@@ -306,26 +317,26 @@ void CollisionComponent::HandleMsg(Message* m)
 			break;
 		
 		// generate AABBs
-		Box* mybox = m_geom->m_bound;
-		Box* itsbox = info->bound;
+		Box mybox = m_geom->m_bound;
+		Box itsbox = info->bound;
 		
-		Box* mytr = mybox->Translate(m_spatial->pos.x, m_spatial->pos.y);
-		Box* itstr = itsbox->Translate(info->pos.x, info->pos.y);
+		Box mytr = mybox.Translate(m_spatial->pos.x, m_spatial->pos.y);
+		Box itstr = itsbox.Translate(info->pos.x, info->pos.y);
 		
 		
-		if (mytr->IsColliding(itstr))
+		if (mytr.IsColliding(itstr))
 		{			
 			// find corner that is colliding
 			Vector2 point;
 			Vector2 offset = Vector2(0, 0);
-			if (itstr->Contains(mytr->base))
-				offset = mytr->base - m_spatial->pos;
-			else if (itstr->Contains(mytr->base + Vector2(mytr->dim.x, 0)))
-				offset = mytr->base + Vector2(mytr->dim.x, 0) - m_spatial->pos;
-			else if (itstr->Contains(mytr->base + Vector2(0, mytr->dim.y)))
-				offset = mytr->base + Vector2(0, mytr->dim.y) - m_spatial->pos;
-			else if (itstr->Contains(mytr->base + mytr->dim))
-				offset = mytr->base + mytr->dim - m_spatial->pos;
+			if (itstr.Contains(mytr.base))
+				offset = mytr.base - m_spatial->pos;
+			else if (itstr.Contains(mytr.base + Vector2(mytr.dim.x, 0)))
+				offset = mytr.base + Vector2(mytr.dim.x, 0) - m_spatial->pos;
+			else if (itstr.Contains(mytr.base + Vector2(0, mytr.dim.y)))
+				offset = mytr.base + Vector2(0, mytr.dim.y) - m_spatial->pos;
+			else if (itstr.Contains(mytr.base + mytr.dim))
+				offset = mytr.base + mytr.dim - m_spatial->pos;
 		
 			SpatialAttr* itsSA = 
 				static_cast<SpatialAttr* >(info->other->GetAttribute(EATTR_SPATIAL));
@@ -348,7 +359,7 @@ void CollisionComponent::HandleMsg(Message* m)
 					static_cast<PhysicAttr* >(parent->GetAttribute(EATTR_PHYSIC));
 					
 				Vector2 vel = pa->vel;
-				Vector2 impact = itstr->IntersectionPoint(Ray2(pa->lastpos + offset, vel));
+				Vector2 impact = itstr.IntersectionPoint(Ray2(pa->lastpos + offset, vel));
 				Vector2 pene = m_spatial->pos + offset - impact;
 				
 				if (impact.x == 0 && impact.y == 0) break;
@@ -359,7 +370,7 @@ void CollisionComponent::HandleMsg(Message* m)
 						
 				if (pene.length() > 0)
 				{
-					Vector2 n = itstr->NormalHitBy(pa->lastpos + offset, vel);
+					Vector2 n = itstr.NormalHitBy(pa->lastpos + offset, vel);
 					Vector2 pn = pene.project(n);
 					Vector2 newpos = pene - pn.scale(2);
 					//mySA->pos += (pn.scale(-2) - pn.normalize().scale(0.001));
@@ -415,9 +426,6 @@ void CollisionComponent::HandleMsg(Message* m)
 			}
 		}
 		
-		delete mytr;
-		delete itstr;
-		
 		break;
 	}
 }
@@ -467,6 +475,50 @@ CollisionInfo* CollisionComponent::GetCollisionInfo()
 		
 		m_info = info;
 		return info;
+	}
+}
+
+// ------------------------------------
+Box CollisionComponent::GetAABB()
+// ------------------------------------
+{
+	Box b = m_geom->m_bound;
+	return b.Translate(m_spatial->pos.x, m_spatial->pos.y);
+}
+
+// ------------------------------------
+Mesh CollisionComponent::GetMesh()
+// ------------------------------------
+{
+	Mesh m = m_geom->m_mesh.MeshTranslatedBy(m_spatial->pos);
+	return m;
+}
+
+// ------------------------------------
+Vector2 CollisionComponent::GetVelocity()
+// ------------------------------------
+{
+	if (parent->RespondsTo(EMSG_PHYSIC))
+	{
+		PhysicComponent* pc = 
+			static_cast<PhysicComponent* >(parent->GetComponent(ECOMP_PHYSIC));
+		return pc->GetVelocity();
+	}
+	else
+	{
+		return Vector2(0, 0);
+	}
+}
+
+// ------------------------------------
+void CollisionComponent::ApplyImpulse(Vector2 n, float j)
+// ------------------------------------
+{
+	if (parent->RespondsTo(EMSG_PHYSIC))
+	{
+		PhysicComponent* pc = 
+			static_cast<PhysicComponent* >(parent->GetComponent(ECOMP_PHYSIC));
+		pc->m_physic->vel += n.scale(1.01 * j);
 	}
 }
 
@@ -528,6 +580,7 @@ AIComponent::AIComponent() :
 // ------------------------------------
 	Component(ECOMP_AI)
 {
+
 }
 
 // ------------------------------------

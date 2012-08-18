@@ -12,7 +12,7 @@ TerrainChunk::TerrainChunk() :
 	height(0),
 	x(0)
 {
-	Box* b = new Box(Vector2(0, -100), Vector2(10, 100));
+	Box b = Box(Vector2(0, -100), Vector2(10, 100));
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
 	AddAttribute(new TexAttr("Textures/default.png"));
@@ -27,7 +27,7 @@ TerrainChunk::TerrainChunk(float height, float x) :
 	height(height),
 	x(x)
 {
-	Box* b = new Box(Vector2(0, -100), Vector2(10, 100 + height));
+	Box b = Box(Vector2(0, -100), Vector2(10, 100 + height));
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
 	AddAttribute(new SpatialAttr(x, 0));

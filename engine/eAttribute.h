@@ -68,12 +68,13 @@ class GeomAttr : public Attribute
 public:
 	GeomAttr();
 	GeomAttr(GEOM);
-	GeomAttr(Box* );
+	GeomAttr(Box );
 	
 	virtual int IsAttribute(EATTR a);
 	
 	GEOM m_shape;
-	Box* m_bound;
+	Box m_bound;
+	Mesh m_mesh;
 };
 
 

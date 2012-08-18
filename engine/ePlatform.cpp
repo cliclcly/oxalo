@@ -12,7 +12,7 @@ Platform::Platform() :
 	_base(Vector2(0, 0)),
 	_dim(Vector2(0.5, 2))
 {
-	Box* b = new Box( Vector2(0, 0), Vector2(0.5, 2));
+	Box b = Box( Vector2(0, 0), Vector2(0.5, 2));
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
 	AddAttribute(new SpatialAttr(0, 0));
@@ -28,7 +28,7 @@ Platform::Platform(Vector2 base, Vector2 dim) :
 	_base(base),
 	_dim(dim)
 {
-	Box* b = new Box( Vector2(0, 0), dim);
+	Box b = Box( Vector2(0, 0), dim);
 	GeomAttr* g = new GeomAttr(b);
 	AddAttribute(g);
 	AddAttribute(new SpatialAttr(base.x, base.y));

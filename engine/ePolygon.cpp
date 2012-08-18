@@ -42,7 +42,7 @@ Vector2::Vector2(float x, float y) :
 }
 
 // ------------------------------------
-void Vector2::print()
+void Vector2::print() const
 // ------------------------------------
 {
 	cout << "[ " << x << ", " << y << "]";
@@ -60,7 +60,7 @@ Vector2 Vector2::normalize() const
 // ------------------------------------
 {
 	float l = length();
-	if (l == 0) Vector2(x, y);
+	if (l == 0) return Vector2(x, y);
 	return Vector2(x/l, y/l);
 }
 
@@ -85,6 +85,21 @@ Vector2 Vector2::project(const Vector2& other)
 	Vector2 ub = other.normalize();
 	float d = dot(other);
 	return ub.scale(d);
+}
+
+// ------------------------------------
+Vector2 Vector2::ClockwiseNormal() const
+// ------------------------------------
+{
+	return Vector2(y, -x);
+}
+
+// ------------------------------------
+Vector2 Vector2::TripleProduct(const Vector2& other)
+// ------------------------------------
+{
+	float z = x * other.y - y * other.x;
+	return Vector2(-z * other.y, z * other.x);
 }
 
 // ------------------------------------
@@ -132,7 +147,7 @@ float Vector2::operator*(const Vector2& other)
 }
 
 // ------------------------------------
-int Vector2::operator==(const Vector2& other)
+int Vector2::operator==(const Vector2& other) const
 // ------------------------------------
 {
 	if (x == other.x && y == other.y)
@@ -272,6 +287,36 @@ Segment2::Segment2(const Vector2& a, const Vector2& b) :
 }
 
 // ------------------------------------
+void Segment2::Print()
+// ------------------------------------
+{
+	p1.print();
+	printf(" to ");
+	p2.print();
+	printf("\n");
+}
+
+// ------------------------------------
+Vector2 Segment2::Normal()
+// ------------------------------------
+{
+	Vector2 d = p2 - p1;
+	Vector2 p1o = -p1;
+	return p1o.TripleProduct(d).normalize();
+}
+
+// ------------------------------------
+int Segment2::IsClockwise(const Vector2& p)
+// ------------------------------------
+{
+	Vector2 s = p2 - p1;
+	Vector2 n = s.ClockwiseNormal();
+	Vector2 d = p - p1;
+	if (d.dot(n) >= 0) return true;
+	return false;
+}
+
+// ------------------------------------
 Box::Box()
 // ------------------------------------
 {
@@ -299,23 +344,37 @@ void Box::Print()
 }
 
 // ------------------------------------
-int Box::IsColliding(Box* other)
+int Box::IsColliding(Box other)
 // ------------------------------------
 {
 	int cx = 0;
 	int cy = 0;
 	
 	// check x collision
-	if ((base.x >= other->base.x) && (base.x <= (other->base.x + other->dim.x)))
+	if ((base.x >= other.base.x) && (base.x <= (other.base.x + other.dim.x)))
 		cx = 1;
-	if (((base.x + dim.x) >= other->base.x) && ((base.x + dim.x) <= (other->base.x + other->dim.x)))
+	if (((base.x + dim.x) >= other.base.x) && ((base.x + dim.x) <= (other.base.x + other.dim.x)))
 		cx = 1;
 		
-	if ( (base.y >= other->base.y) && (base.y <= (other->base.y + other->dim.y) ) )
+	if ((other.base.x >= base.x) && (other.base.x <= (base.x + dim.x)))
+		cx = 1;
+	if (((other.base.x + other.dim.x) >= base.x) && ((other.base.x + other.dim.x) <= (base.x + dim.x)))
+		cx = 1;	
+		
+	if ( (base.y >= other.base.y) && (base.y <= (other.base.y + other.dim.y) ) )
 	{
 		cy = 1;
 	}
-	if ( ( (base.y + dim.y) >= other->base.y) && ( (base.y + dim.y) <= (other->base.y + other->dim.y)))
+	if ( ( (base.y + dim.y) >= other.base.y) && ( (base.y + dim.y) <= (other.base.y + other.dim.y)))
+	{
+		cy = 1;
+	}
+	
+	if ( (other.base.y >= base.y) && (other.base.y <= (base.y + dim.y) ) )
+	{
+		cy = 1;
+	}
+	if ( ( (other.base.y + other.dim.y) >= base.y) && ( (other.base.y + other.dim.y) <= (base.y + dim.y)))
 	{
 		cy = 1;
 	}
@@ -448,10 +507,10 @@ Vector2 Box::NormalHitBy(const Vector2& pos, const Vector2& dir)
 }
 
 // ------------------------------------
-Box* Box::Translate( float x, float y)
+Box Box::Translate( float x, float y)
 // ------------------------------------
 {
-	return new Box(Vector2(base.x + x, base.y + y), dim);
+	return Box(Vector2(base.x + x, base.y + y), dim);
 }
 
 // ------------------------------------
@@ -620,9 +679,25 @@ Mesh::Mesh(std::vector<Vector2 > points) :
 }
 
 // ------------------------------------
+Mesh::Mesh(Box b)
+// ------------------------------------
+{
+	points.push_back( b.base);
+	points.push_back( b.base + Vector2(0, b.dim.y));
+	points.push_back( b.base + b.dim);
+	points.push_back( b.base + Vector2(b.dim.x, 0));
+}
+
+// ------------------------------------
 void Mesh::AddPoint(const Vector2& point)
 // ------------------------------------
 {
+	std::vector<Vector2 >::iterator it;
+	for (it = points.begin(); it != points.end(); it++)
+	{
+		if ((*it) == point)
+			return;
+	}
 	points.push_back(point);
 }
 
@@ -641,8 +716,9 @@ void Mesh::Print()
 	for (it = points.begin(); it != points.end(); it++)
 	{
 		(*it).print();
-		printf("\n");
+		printf(" ");
 	}
+	printf("\n");
 }
 
 // ------------------------------------
@@ -655,6 +731,19 @@ void Mesh::Translate(const Vector2& other)
 		(*it).x += other.x;
 		(*it).y += other.y;
 	}
+}
+
+// ------------------------------------
+Mesh Mesh::MeshTranslatedBy(const Vector2& other)
+// ------------------------------------
+{
+	Mesh ret;
+	std::vector<Vector2 >::iterator it;
+	for (it = points.begin(); it != points.end(); it++)
+	{
+		ret.AddPoint( Vector2((*it).x + other.x, (*it).y + other.y));
+	}
+	return ret;
 }
 
 // ------------------------------------
@@ -680,15 +769,258 @@ Box Mesh::GetAABB()
 }
 
 // ------------------------------------
-Vector2 Mesh::Support(const Vector2& dir)
+Vector2 Mesh::GetFarthestPointInDirection(const Vector2& dir)
 // ------------------------------------
 {
-	Vector2 max;
+	Vector2 max = Vector2(0, 0);
 	float proj = -FLT_MAX;
-	
 	std::vector<Vector2 >::iterator it;
 	for (it = points.begin(); it != points.end(); it++)
 	{
+		float d = (*it).dot(dir);
+		if (d > proj)
+		{
+			proj = d;
+			max = (*it);
+		}
+	}
+	return max;
+}
+
+// ------------------------------------
+Vector2 Mesh::Support(Mesh b, const Vector2& dir)
+// ------------------------------------
+{
+	Vector2 pa = GetFarthestPointInDirection(dir);
+	Vector2 pb = b.GetFarthestPointInDirection(dir.scale(-1));
+	
+	return pa - pb;
+}
+
+// ------------------------------------
+int Mesh::Contains(const Vector2& p)
+// ------------------------------------
+{
+	if (points.size() < 3) return false;
+	
+	std::vector<Vector2 > pts = points;
+	pts.push_back(points[0]);
+	
+	int inside = 1;
+	
+	std::vector<Vector2 >::iterator it;
+	for (it = pts.begin(); it != pts.end() - 1; it++)
+	{
+		// printf("P1: "); (*it).print(); 
+		// printf(" P2: "); (*(it + 1)).print(); printf("\n");
+		Segment2 s = Segment2( *it, *(it + 1));
+		inside = inside && s.IsClockwise(p);
+	}
+	
+	return inside;
+}
+
+// ------------------------------------
+int Mesh::HasVertex(const Vector2& p)
+// ------------------------------------
+{
+	std::vector<Vector2 >::iterator it;
+	for (it = points.begin(); it != points.end(); it++)
+	{
+		if (p == *it) return true;
+	}
+	return false;
+}
+
+// ------------------------------------
+void Mesh::GJKEnsureClockwise()
+// ------------------------------------
+{
+	if (points.size() != 3)
+		return;
+	Segment2 s = Segment2(points[0], points[1]);
+	if (!s.IsClockwise(points[2]))
+	{
+		Vector2 tmp = points[1];
+		points[1] = points[2];
+		points[2] = tmp;
+	}
+}
+
+// ------------------------------------
+void Mesh::GJKAddPoint(const Vector2& other)
+// ------------------------------------
+{
+	AddPoint(other);
+	if (points.size() == 4)
+		points.erase(points.begin());
+	GJKEnsureClockwise();
+}
+
+// ------------------------------------
+Vector2 Mesh::GJKGetNextDirection()
+// ------------------------------------
+{
+	if (points.size() == 2)
+	{
+		Vector2 d = points[1] - points[0];
+		Vector2 dn = d.ClockwiseNormal();
+		Vector2 ao = -points[0];
+		if (dn.dot(ao) < 0)
+			dn = -dn;
+		return dn;			
+	}
+	else if (points.size() == 3)
+	{
+		Vector2 a = points[0];
+		Vector2 b = points[1];
+		Vector2 c = points[2];
+		Vector2 ac = a - c;
+		Vector2 bc = b - c;
+		Vector2 co = -c;
 		
+		Vector2 n = ac.TripleProduct(bc);
+		if (n.dot(co) > 0)
+			return n;
+		n = bc.TripleProduct(ac);
+		if (n.dot(co) > 0)
+			return n; 
+	}
+	return Vector2(-1, 0);
+}
+
+// ------------------------------------
+int Mesh::GJK(Mesh b)
+// ------------------------------------
+{
+	return GJK(b, Vector2(0, 1));
+}
+
+// ------------------------------------
+int Mesh::GJK(Mesh b, const Vector2& dir)
+// ------------------------------------
+{
+	Mesh simplex;
+	simplex.GJKAddPoint( Support(b, dir));
+	Vector2 d = dir.scale(-1);
+	
+	while (true)
+	{
+		Vector2 next = Support(b, d);
+		if (next.dot(d) < 0) 
+			return false;
+		simplex.GJKAddPoint(next);
+		if (simplex.Contains(Vector2(0, 0))) 
+			return true;
+		
+		d = simplex.GJKGetNextDirection();
+	}
+}
+
+// ------------------------------------
+void Mesh::EPAAddPoint(Vector2 p, Vector2 toAdd)
+// ------------------------------------
+{
+	if (!HasVertex(toAdd))
+	{
+		std::vector<Vector2 >::iterator it;
+		for (it = points.begin(); it != points.end(); it++)
+		{
+			if ((*it) == p)
+				points.insert(it+1, toAdd);
+		}
+	}
+}
+
+// ------------------------------------
+Segment2 Mesh::EPAGetClosestEdge()
+// ------------------------------------
+{
+	std::vector<Vector2 > pts = points;
+	pts.push_back(points[0]);
+	
+	Segment2 cEdge;
+	float cDist = FLT_MAX;
+	
+	std::vector<Vector2 >::iterator it;
+	for (it = pts.begin(); it != pts.end() - 1; it++)
+	{
+		Segment2 s = Segment2( *it, *(it+1));
+		Vector2 d = s.p2 - s.p1;
+		Vector2 p1o = -s.p1;
+		Vector2 n = p1o.TripleProduct(d).normalize();
+		float dist = s.p1.dot(n);
+		if (dist < cDist)
+		{
+			cDist = dist;
+			cEdge = s;
+		}
+	}
+	
+	cEdge.distToOrigin = cDist;	
+	return cEdge;
+}
+
+// ------------------------------------
+std::pair<float, Vector2> Mesh::EPA(Mesh b)
+// ------------------------------------
+{
+	Mesh simplex;
+	simplex.GJKAddPoint( Support(b, Vector2(0, 1)));
+	Vector2 d = Vector2(0, -1);
+	
+	while (true)
+	{
+		Vector2 next = Support(b, d);
+		simplex.GJKAddPoint(next);
+		if (simplex.Contains(Vector2(0, 0))) 
+			break;
+		
+		d = simplex.GJKGetNextDirection();
+	}
+	
+	int i = 0;
+	float lastmin = FLT_MAX;
+	Vector2 n;
+	while (i < 100)
+	{
+		Segment2 s = simplex.EPAGetClosestEdge();
+		n = s.Normal();
+		Vector2 p = Support(b, n);
+		
+		float dist = p.dot(n);
+		//printf("Dist: %f\n", dist);
+		//printf("DistToOrigin: %f\n", s.distToOrigin);
+		if (dist - s.distToOrigin < .1)
+			return make_pair(dist, n);
+			
+		simplex.EPAAddPoint(s.p1, p);
+		lastmin = s.distToOrigin;
+		i++;
+	}
+	printf("EPA: past\n");
+	return make_pair(lastmin, n);
+}
+
+// ------------------------------------
+void Mesh::DistAddPoint(const Vector2& other)
+// ------------------------------------
+{
+	AddPoint(other);
+	if (points.size() == 3)
+		points.erase(points.begin());
+}
+
+// ------------------------------------
+float Mesh::Distance(Mesh other)
+// ------------------------------------
+{
+	Mesh simplex;
+	simplex.DistAddPoint( Support(other, Vector2(0, 1)));
+	Vector2 d = Vector2(0, -1);
+	
+	while (true)
+	{
+		Vector2 next = Support(other, d);
 	}
 }

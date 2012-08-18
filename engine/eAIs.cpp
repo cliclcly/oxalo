@@ -57,7 +57,7 @@ void SlimeAIComponent::HandleMsg(Message* m)
 					m_state->falling = false;
 					parent->HandleMsg(new ChangeAnimMessage(ANIM_JUMP,0));
 				}else{
-					parent->HandleMsg(new ChangeAnimMessage(ANIM_STILL,0));					
+					parent->HandleMsg(new ChangeAnimMessage(ANIM_STILL,0));	
 					m_physic->vel.x = 0;
 					waitTime+=tm->m_diff;
 				}

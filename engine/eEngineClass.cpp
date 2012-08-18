@@ -10,6 +10,7 @@
 
 #include "eAbstractObject.h"
 #include "eMessage.h"
+#include "eLogger.h"
 
 // ********************************************************
 // EngineClass Statics
@@ -59,7 +60,7 @@ int EngineClass::Initialize(int width, int height)
 void EngineClass::CreateAnimationDictionary()
 // ------------------------------------
 {
-	printf("derp\n");
+	printf("start animation dictionary\n");
 	for(int i=0;i<enemyTypes->m_children.size();i++)
 	{
 		std::string path = "Textures/";
@@ -71,7 +72,7 @@ void EngineClass::CreateAnimationDictionary()
 		path+="/animation.config";
 		printf("path: %s\n",path.c_str());
 		XMLNode * conf = XMLParser::Parse(path);
-		printf("derp\n");
+		printf("begin loading\n");
 		for(int c = COLOR_FIRST;c<=COLOR_LAST;c++)
 		{
 			AnimationSet* temp = new AnimationSet(enemyType,(COLOR)c);
@@ -82,6 +83,7 @@ void EngineClass::CreateAnimationDictionary()
 			base += "/";
 			base += EngineClass::colorString[c];
 			base += "/";
+			//printf("base:%s\n",base.c_str());
 			for (int i=ANIM_FIRST;i<=ANIM_LAST;i++)
 			{
 				XMLNode * anim = conf->findChild(EngineClass::animString[i]);
@@ -89,7 +91,6 @@ void EngineClass::CreateAnimationDictionary()
 				XMLNode * frameNum = anim->findChild("frameNum");
 				XMLNode * frameRate = anim->findChild("frameRate");
 				if(frameNum==NULL || frameRate==NULL){throw new std::exception();}
-				//printf("loop: %d\n",i);
 				std::string path = base;
 				path+=EngineClass::animString[i];
 				path+=".png";
@@ -97,6 +98,7 @@ void EngineClass::CreateAnimationDictionary()
 			}
 			
 		}
+		printf("end loading\n");
 	}
 
 	//will read config file eventually
@@ -275,6 +277,8 @@ int EngineClass::GetNextGUID()
 int EngineClass::initialize(int width, int height)
 // ------------------------------------
 {
+	Logger::Initialize(100);
+	Logger::Log(1,"Logger Initialized");
 	char* argv[] = {(char* )"oxalo", (char* )""};
 	int argc = 1;
 	glutInit(&argc, argv);

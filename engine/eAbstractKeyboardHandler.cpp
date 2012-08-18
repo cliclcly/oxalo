@@ -12,7 +12,7 @@
 DumbKeyboardHandler::DumbKeyboardHandler()
 // ------------------------------------
 {
-
+	ZeroMemory(m_keys, 256 * sizeof(GLubyte));
 }
 
 // ------------------------------------
@@ -28,7 +28,10 @@ void DumbKeyboardHandler::KeyDown(GLubyte key, int x, int y)
 {
 	m_keys[key] = 1;
 	if (m_keys[27])
+	{
+		printf("key: %d\n", key);
 		exit(0);
+	}
 }
 
 // ------------------------------------

@@ -101,9 +101,9 @@ GeomAttr::GeomAttr() :
 // ------------------------------------
 	Attribute(EATTR_GEOM),
 	m_shape(GEOM_SQUARE),
-	m_bound(new Box(Vector2(-0.5, -0.5), Vector2(1, 1)))
+	m_bound(Box(Vector2(-0.5, -0.5), Vector2(1, 1)))
 {
-
+	m_mesh = Mesh(m_bound);
 }
 
 // ------------------------------------
@@ -115,24 +115,24 @@ GeomAttr::GeomAttr(GEOM g) :
 	switch(g)
 	{
 	case GEOM_SQUARE:
-		m_bound = new Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+		m_bound = Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+		m_mesh = Mesh(m_bound);
 		break;
 	case GEOM_TRIANGLE:
-		m_bound = new Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+		m_bound = Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+		m_mesh = Mesh(m_bound);
 		break;
 	}
 }
 
 // ------------------------------------
-GeomAttr::GeomAttr(Box* b) :
+GeomAttr::GeomAttr(Box b) :
 // ------------------------------------
 	Attribute(EATTR_GEOM),
 	m_shape(GEOM_SQUARE)
 {
-	if (b)
-		m_bound = b;
-	else
-		m_bound = new Box(Vector2(-0.5, -0.5), Vector2(1, 1));
+	m_bound = b;
+	m_mesh = Mesh(b);
 }
 
 // ------------------------------------

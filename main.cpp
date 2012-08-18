@@ -7,9 +7,32 @@
 #include <stdio.h>
 
 #include "engine/eEngineClass.h"
+#include <vector>
 
 int main(int argc, char* argv[])
 {
+	std::vector<Vector2 > points;
+	points.push_back(Vector2(0, 0));
+	points.push_back(Vector2(0, 1));
+	points.push_back(Vector2(2, 1));
+	points.push_back(Vector2(2, 0));
+	Mesh m1 = Mesh(points);
+	
+	std::vector<Vector2 > points2;
+	points2.push_back(Vector2(0.5, 0.5));
+	points2.push_back(Vector2(0.5, 1.5));
+	points2.push_back(Vector2(1.5, 1.5));
+	points2.push_back(Vector2(1.5, 0.5));
+	Mesh m2 = Mesh(points2);
+	
+	std::vector<Vector2 > points3;
+	points3.push_back( Vector2(-0.5, 0.6));
+	points3.push_back( Vector2(-0.5, 1.0));
+	points3.push_back( Vector2(1.0, -0.5));
+	points3.push_back( Vector2(0.6, -0.5));
+	Mesh m3 = Mesh(points3);
+	
+	
 	int result = EngineClass::Initialize(600, 480);
 	
 	
@@ -42,4 +65,7 @@ int main(int argc, char* argv[])
 	EngineClass::Run();
 
 	return result;
+	
+	
+	return 0;
 }

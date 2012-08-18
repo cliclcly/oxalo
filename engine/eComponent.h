@@ -62,6 +62,8 @@ public:
 	
 	virtual void HandleMsg(Message* );
 	
+	Vector2 GetVelocity();
+	
 	SpatialAttr* m_spatial;
 	PhysicAttr* m_physic;
 	StateAttr* m_state;
@@ -77,7 +79,7 @@ public:
 	AbstractObject* other;
 	Vector2 pos;
 	Vector2 vel;
-	Box* bound;
+	Box bound;
 };
 
 // ------------------------------------
@@ -91,6 +93,11 @@ public:
 	virtual void HandleMsg(Message* );
 	
 	CollisionInfo* GetCollisionInfo();
+	Box GetAABB();
+	Mesh GetMesh();
+	Vector2 GetVelocity();
+	
+	void ApplyImpulse(Vector2 n, float j);
 	
 	SpatialAttr* m_spatial;
 	GeomAttr* m_geom;
