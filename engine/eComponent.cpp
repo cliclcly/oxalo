@@ -150,6 +150,13 @@ void Component::SetAttribute(Attribute* ar)
 }
 
 // ------------------------------------
+std::string Component::Log(int fields[], int size)
+// ------------------------------------
+{
+	return std::string("logging Component");
+}
+
+// ------------------------------------
 RenderComponent::RenderComponent() :
 // ------------------------------------
 	Component(ECOMP_RENDER),

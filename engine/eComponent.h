@@ -14,6 +14,7 @@
 #include "eAttribute.h"
 #include "ePolygon.h"
 #include "eAnimationObject.h"
+#include "iLoggable.h"
 
 class AbstractObject;
 class Box;
@@ -21,7 +22,7 @@ class Box;
 
 
 // ------------------------------------
-class Component
+class Component : public iLoggable
 // ------------------------------------
 {
 public:
@@ -33,6 +34,8 @@ public:
 	virtual void HandleMsg(Message* ) = 0;
 	
 	virtual void SetAttribute(Attribute* ar);
+	
+	virtual std::string Log(int fields[], int size);
 	
 	ECOMP type;
 	std::vector<EATTR> reqs;

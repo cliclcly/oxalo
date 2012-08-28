@@ -12,13 +12,14 @@
 #include "ePolygon.h"
 #include <vector>
 #include <string>
+#include "iLoggable.h"
 
 #include <GL/gl.h>
 
 class Box;
 
 // ------------------------------------
-class Attribute
+class Attribute : public iLoggable
 // ------------------------------------
 {
 public:
@@ -28,6 +29,8 @@ public:
 	virtual int IsAttribute(EATTR a) = 0;
 	
 	static Attribute* GetNewAttribute(EATTR a);
+	
+	virtual std::string Log(int fields[], int size);
 	
 	EATTR type;
 	std::vector<EATTR > reqs;

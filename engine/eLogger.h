@@ -18,7 +18,7 @@ public:
 	static Logger* Instance();
 	static int Initialize(int level);
 	static void Log(int level,std::string);
-	static void Log(int level,iLoggable*,int fields[]);
+	static void Log(int level,iLoggable*,int fields[], int size);
 	
 public:
 	int initialize(int level);

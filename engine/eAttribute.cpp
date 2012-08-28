@@ -51,6 +51,13 @@ Attribute* Attribute::GetNewAttribute(EATTR a)
 }
 
 // ------------------------------------
+std::string Attribute::Log(int fields[], int size)
+// ------------------------------------
+{
+	return std::string("logging Attribute");
+}
+
+// ------------------------------------
 SpatialAttr::SpatialAttr() :
 // ------------------------------------
 	Attribute(EATTR_SPATIAL),

@@ -42,12 +42,12 @@ void Logger::Log(int level, std::string toLog)
 }
 
 // ------------------------------------
-void Logger::Log(int level, iLoggable* toLog,int fields[])
+void Logger::Log(int level, iLoggable* toLog,int fields[], int size)
 // ------------------------------------
 {
 	if (!Instance()) return;
 	
-	Instance()->log(level,toLog->Log(fields));
+	Instance()->log(level,toLog->Log(fields, size));
 }
 
 // ------------------------------------

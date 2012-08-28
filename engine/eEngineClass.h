@@ -27,6 +27,8 @@
 #include "genericEnemy.h"
 #include "eAnimationObject.h"
 #include "eXMLParser.h"
+#include "iLoggable.h"
+#include "eLogger.h"
 
 #define USE_SPECULATIVE_CONTACTS 0
 
@@ -95,6 +97,7 @@ private: // Methods
 	//enemies
 	void loadEnemies();
 	bool verifyEnemy(XMLNode*);
+	
 	
 private: // Members
 	static EngineClass* m_pInstance;

@@ -10,7 +10,6 @@
 
 #include "eAbstractObject.h"
 #include "eMessage.h"
-#include "eLogger.h"
 
 // ********************************************************
 // EngineClass Statics
@@ -278,7 +277,7 @@ int EngineClass::initialize(int width, int height)
 // ------------------------------------
 {
 	Logger::Initialize(100);
-	Logger::Log(1,"Logger Initialized");
+	Logger::Log(100,"Logger Initialized");
 	char* argv[] = {(char* )"oxalo", (char* )""};
 	int argc = 1;
 	glutInit(&argc, argv);
@@ -480,6 +479,8 @@ int EngineClass::addObject(AbstractObject* object)
 // ------------------------------------
 {
 	m_objectHandler->AddObject(object);
+	int parameters[] = {LOGGER_EATTR_SPATIAL};
+	Logger::Log(100, object, parameters, 1);
 	return object->GUID;
 }
 

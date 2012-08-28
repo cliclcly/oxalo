@@ -14,7 +14,7 @@
 #include <vector>
 
 // ------------------------------------
-class AbstractObject
+class AbstractObject : public iLoggable
 // ------------------------------------
 {
 public:
@@ -32,6 +32,8 @@ public:
 	virtual Attribute* AddAttribute(EATTR a);
 	virtual int AddAttribute(Attribute* );
 	virtual Attribute* GetAttribute(EATTR a);
+	
+	virtual std::string Log(int fields[], int size);
 	
 	int GUID;
 	

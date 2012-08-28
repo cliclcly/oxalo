@@ -1,5 +1,5 @@
 // ****************************************************************************
-// iLoggable.cpp
+// iLoggable.h
 //
 //
 // ****************************************************************************
@@ -11,7 +11,7 @@ class iLoggable
 {
 public:
 	virtual ~iLoggable() {}
-	virtual std::string Log(int fields[]) const =0;
+	virtual std::string Log(int fields[],int size)=0;
 };
 
 #endif
